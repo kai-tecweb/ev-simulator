@@ -1,0 +1,321 @@
+/* EV導入効果試算ツール - スタイル */
+:root {
+  --color-main: #003087;
+  --color-accent: #00a651;
+  --color-bg: #f4f6fa;
+  --color-card: #ffffff;
+  --color-text: #1a1a2e;
+  --color-border: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.header {
+  background: var(--color-main);
+  color: #fff;
+  padding: 1rem 1.5rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  background: var(--color-card);
+  border-bottom: 2px solid var(--color-border);
+  padding: 0 1rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.tab-btn {
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: #64748b;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+  color: var(--color-main);
+}
+
+.tab-btn.active {
+  color: var(--color-main);
+  font-weight: 600;
+  border-bottom-color: var(--color-accent);
+}
+
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+/* 基本情報入力 - 2カラム */
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .two-column {
+    grid-template-columns: 1fr;
+  }
+}
+
+.column-form h2,
+.column-summary h2 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-main);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.column-form h2:not(:first-child) {
+  margin-top: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: var(--color-text);
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  max-width: 320px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--color-main);
+  box-shadow: 0 0 0 2px rgba(0, 48, 135, 0.15);
+}
+
+.form-group input[type="range"] {
+  max-width: 280px;
+  padding: 0;
+}
+
+/* サマリーカード */
+.column-summary {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.summary-card {
+  background: var(--color-card);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-border);
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+
+.summary-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.summary-unit {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-left: 0.25rem;
+}
+
+/* 試算結果タブ */
+.cost-table-wrap,
+.chart-box,
+.co2-panel {
+  background: var(--color-card);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-border);
+}
+
+.cost-table-wrap h2,
+.chart-box h3,
+.co2-panel h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-main);
+}
+
+.cost-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cost-table th,
+.cost-table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cost-table th {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+.cost-table .total-row {
+  font-weight: 700;
+  background: rgba(0, 166, 81, 0.06);
+}
+
+.cost-table .total-row td {
+  border-bottom: none;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.chart-box.full {
+  grid-column: 1 / -1;
+}
+
+.chart-box canvas {
+  max-height: 280px;
+}
+
+.co2-panel p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.export-wrap {
+  margin-top: 1.5rem;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #008f45;
+}
+
+/* 確認事項タブ */
+.confirm-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-card);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.confirm-table th,
+.confirm-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.confirm-table th {
+  background: var(--color-main);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.confirm-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.confirm-table .status-btn {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.confirm-table .status-btn:hover {
+  background: var(--color-bg);
+}
+
+.confirm-table .status-btn.confirmed {
+  background: rgba(0, 166, 81, 0.15);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.confirm-table .status-btn.checking {
+  background: rgba(0, 48, 135, 0.1);
+  border-color: var(--color-main);
+  color: var(--color-main);
+}
