@@ -16,7 +16,7 @@ const CONFIRM_ITEMS = [
   { id: 3, text: '新出光は電力小売り事業者として顧客に電力を販売するビジネスモデルか、仕入単価の現実値は', importance: '高', importanceClass: 'high' },
   { id: 4, text: '2026年度EV補助金の最新額・申請条件', importance: '中', importanceClass: 'mid' },
   { id: 5, text: 'アウトプットの優先形式（Excel / PDF / 画面印刷）', importance: '中', importanceClass: 'mid' },
-  { id: 6, text: 'Zoom打合せの日程調整', importance: '低', importanceClass: 'low' },
+  { id: 6, text: 'ビデオチャットの日程調整', importance: '低', importanceClass: 'low' },
 ];
 
 // Zoom打合せ確認事項（7-16）セクション別
@@ -44,6 +44,14 @@ const ZOOM_CONFIRM_SECTIONS = [
       { id: 14, text: '将来的にEMS（分散充電）機能は必要か', importanceClass: 'mid' },
       { id: 15, text: '複数拠点・複数営業所の一括管理は必要か', importanceClass: 'mid' },
       { id: 16, text: '顧客が自分でデータ入力できるセルフサービス型にするか', importanceClass: 'mid' },
+    ],
+  },
+  {
+    title: 'アウトプット形式',
+    items: [
+      { id: 17, text: 'アウトプットはWebアプリ・Excel・PDFのどれが希望か（複数可）', importanceClass: 'mid' },
+      { id: 18, text: '今回のWebデモのExcel出力機能で要件を満たせているか', importanceClass: 'mid' },
+      { id: 19, text: 'Excelで直接操作したい場合はExcelファイルでの納品も可能', importanceClass: 'mid' },
     ],
   },
 ];
