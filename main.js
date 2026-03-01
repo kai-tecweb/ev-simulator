@@ -9,7 +9,7 @@ const EV_MASTER = {
   '日野ディトロ（仮）': { battery: 100, efficiency: 8.0, range: 400, price: 7500000, subsidy: 2500000, maintenance: 90000 },
 };
 
-// 確認事項マスタ
+// 確認事項マスタ（事前確認事項 1-6）
 const CONFIRM_ITEMS = [
   { id: 1, text: 'ZOモーターズ・日野ディトロの正確なスペック（バッテリー容量・電費・価格・補助金額）', importance: '高', importanceClass: 'high' },
   { id: 2, text: '充電設備は新出光が提供（レンタル/販売）するのか、顧客が自前調達か', importance: '高', importanceClass: 'high' },
@@ -19,9 +19,39 @@ const CONFIRM_ITEMS = [
   { id: 6, text: 'Zoom打合せの日程調整', importance: '低', importanceClass: 'low' },
 ];
 
+// Zoom打合せ確認事項（7-16）セクション別
+const ZOOM_CONFIRM_SECTIONS = [
+  {
+    title: '運用・利用者',
+    items: [
+      { id: 7, text: 'このツールの利用者は新出光の社員だけか、顧客も直接操作するか', importanceClass: 'mid' },
+      { id: 8, text: '顧客に画面を見せながら説明するか、PDF/Excelで渡すか', importanceClass: 'mid' },
+      { id: 9, text: '営業現場でリアルタイムに動かすか、社内で事前に試算して持参するか', importanceClass: 'mid' },
+      { id: 10, text: '1社専用ツールか、複数顧客・複数案件で使い回すか', importanceClass: 'mid' },
+    ],
+  },
+  {
+    title: 'アクセス・セキュリティ',
+    items: [
+      { id: 11, text: 'ログイン機能は必要か（URLを知っていれば誰でも見れてよいか）', importanceClass: 'mid' },
+      { id: 12, text: '顧客ごとにデータを保存・管理する必要があるか', importanceClass: 'mid' },
+      { id: 13, text: '利用する端末はPCだけか、タブレット・スマホも使うか', importanceClass: 'mid' },
+    ],
+  },
+  {
+    title: '将来拡張',
+    items: [
+      { id: 14, text: '将来的にEMS（分散充電）機能は必要か', importanceClass: 'mid' },
+      { id: 15, text: '複数拠点・複数営業所の一括管理は必要か', importanceClass: 'mid' },
+      { id: 16, text: '顧客が自分でデータ入力できるセルフサービス型にするか', importanceClass: 'mid' },
+    ],
+  },
+];
+
 // 確認事項のステータス（id -> 未確認|確認中|確認済み）
 let confirmStatus = {};
 CONFIRM_ITEMS.forEach((item) => { confirmStatus[item.id] = '未確認'; });
+ZOOM_CONFIRM_SECTIONS.forEach((sec) => sec.items.forEach((item) => { confirmStatus[item.id] = confirmStatus[item.id] || '未確認'; }));
 
 // フォーム要素のID一覧
 const FORM_IDS = [
@@ -161,13 +191,13 @@ function updateResultTab() {
 
 function renderConfirmTab() {
   const tbody = document.getElementById('confirm-tbody');
+  const zoomContainer = document.getElementById('zoom-confirm-content');
   const importanceLabel = { high: '🔴 高', mid: '🟡 中', low: '🟢 低' };
   const statusOrder = ['未確認', '確認中', '確認済み'];
 
+  // 事前確認事項テーブル（1-6）
   tbody.innerHTML = CONFIRM_ITEMS.map((item) => {
     const current = confirmStatus[item.id] || '未確認';
-    const nextIdx = (statusOrder.indexOf(current) + 1) % 3;
-    const nextStatus = statusOrder[nextIdx];
     return `
       <tr>
         <td>${item.id}</td>
@@ -178,15 +208,50 @@ function renderConfirmTab() {
     `;
   }).join('');
 
-  tbody.querySelectorAll('.status-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const id = parseInt(btn.dataset.id, 10);
-      const order = ['未確認', '確認中', '確認済み'];
-      const idx = order.indexOf(confirmStatus[id]);
-      confirmStatus[id] = order[(idx + 1) % 3];
-      renderConfirmTab();
+  // Zoom打合せ確認事項（7-16）セクションごとに見出し＋テーブル
+  zoomContainer.innerHTML = ZOOM_CONFIRM_SECTIONS.map((sec) => {
+    const rows = sec.items.map((item) => {
+      const current = confirmStatus[item.id] || '未確認';
+      return `
+        <tr>
+          <td>${item.id}</td>
+          <td>${item.text}</td>
+          <td>${importanceLabel[item.importanceClass]}</td>
+          <td><button type="button" class="status-btn ${current === '確認済み' ? 'confirmed' : ''} ${current === '確認中' ? 'checking' : ''}" data-id="${item.id}">${current}</button></td>
+        </tr>
+      `;
+    }).join('');
+    return `
+      <h4 class="confirm-subsection-title">【${sec.title}】</h4>
+      <table class="confirm-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>確認事項</th>
+            <th>重要度</th>
+            <th>ステータス</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  }).join('');
+
+  // ステータスボタン共通のクリック処理
+  const bindStatusButtons = (el) => {
+    if (!el) return;
+    el.querySelectorAll('.status-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = parseInt(btn.dataset.id, 10);
+        const order = ['未確認', '確認中', '確認済み'];
+        const idx = order.indexOf(confirmStatus[id]);
+        confirmStatus[id] = order[(idx + 1) % 3];
+        renderConfirmTab();
+      });
     });
-  });
+  };
+  bindStatusButtons(tbody);
+  bindStatusButtons(zoomContainer);
 }
 
 function initEvModelSelect() {
