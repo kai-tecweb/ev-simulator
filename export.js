@@ -24,7 +24,7 @@ function exportToExcel() {
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = Math.max(0, co2D - co2E);
   const pct = co2D > 0 ? ((co2Reduce / co2D) * 100).toFixed(1) : '0';
-  const trees = Math.round(co2Reduce * 1000 / 7.5);
+  const trees = Math.round(co2Reduce / 0.0084);
 
   const wb = XLSX.utils.book_new();
 

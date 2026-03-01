@@ -46,8 +46,11 @@ const breakEvenPrice = (buyPrice, fixedCost, power) =>
 
 // 投資回収期間（年）
 const paybackYears = (evPrice, dieselPrice, subsidy, equipPrice, units, saving) => {
+  if (saving == null || saving <= 0 || !Number.isFinite(saving)) return null;
   const totalInvestment = (evPrice - dieselPrice - subsidy + equipPrice) * units;
-  return saving > 0 ? totalInvestment / saving / 12 : 0;
+  if (totalInvestment <= 0) return 0; // 追加投資がゼロ以下＝即時回収
+  const years = totalInvestment / saving / 12;
+  return Number.isFinite(years) && years >= 0 ? years : null;
 };
 
 // CO2計算（軽油）t-CO2/年

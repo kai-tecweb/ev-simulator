@@ -94,12 +94,12 @@ function computeAndUpdateSummary() {
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = co2D - co2E;
 
-  document.getElementById('summary-saving').textContent = saving >= 0
-    ? saving.toLocaleString()
-    : saving.toLocaleString();
+  document.getElementById('summary-saving').textContent = (saving != null && !Number.isNaN(saving))
+    ? Math.round(saving).toLocaleString()
+    : '—';
   document.getElementById('summary-breakeven').textContent = breakEven.toFixed(1);
   document.getElementById('summary-co2').textContent = co2Reduce >= 0 ? co2Reduce.toFixed(1) : '0.0';
-  document.getElementById('summary-payback').textContent = payback > 0 && isFinite(payback) ? payback.toFixed(1) : '—';
+  document.getElementById('summary-payback').textContent = (payback != null && Number.isFinite(payback)) ? payback.toFixed(1) : '—';
 }
 
 function updateResultTab() {
@@ -146,7 +146,9 @@ function updateResultTab() {
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = Math.max(0, co2D - co2E);
   const pct = co2D > 0 ? ((co2Reduce / co2D) * 100).toFixed(0) : '0';
-  const trees = Math.round(co2Reduce * 1000 / 7.5);
+  // 杉1本のCO2吸収量は約0.0084 t-CO2/年 → 削減量(t-CO2/年) ÷ 0.0084 = 本数
+  const CEDAR_CO2_PER_TREE = 0.0084;
+  const trees = Math.round(co2Reduce / CEDAR_CO2_PER_TREE);
 
   document.getElementById('co2-diesel').textContent = co2D.toFixed(2);
   document.getElementById('co2-elec').textContent = co2E.toFixed(2);
