@@ -294,7 +294,25 @@
 
     <!-- タブ④ 確認事項 -->
     <section id="tab-confirm" class="tab-panel">
-      <h3 class="confirm-section-title">事前確認事項</h3>
+
+      <!-- セクション①：実装済み機能 -->
+      <div class="progress-card">
+        <h3 class="confirm-section-title">実装済み機能（進捗報告）</h3>
+        <ul class="progress-list">
+          <li>前回お打合せいただいたExcelを元に試算ツールを構築しました</li>
+          <li>基本料金単価・容量拠出金・電力増量・充電時間の入力項目を追加しました</li>
+          <li>Excelをきれいなデザインで出力できるように実装しました（3シート構成）</li>
+          <li>顧客管理ページを作成しました（会社名・担当者・電話・メールアドレス）</li>
+          <li>顧客ごとに専用URLを自動生成できるようにしました</li>
+          <li>お客様がWebブラウザで台数を選んでリアルタイムに試算結果を確認できる専用ページを作成しました</li>
+          <li>お客様専用ページからExcelのダウンロードも可能です</li>
+        </ul>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- セクション②：ご確認・未確定事項 -->
+      <h3 class="confirm-section-title">ご確認・未確定事項</h3>
       <table class="confirm-table">
         <thead>
           <tr>
@@ -312,6 +330,55 @@
       <div id="zoom-confirm-content">
         <!-- main.js で生成 -->
       </div>
+
+      <hr class="section-divider">
+
+      <!-- セクション③：今後の運用費用 -->
+      <div class="cost-info-section">
+        <h3 class="confirm-section-title">今後の運用費用について</h3>
+
+        <div class="cost-cards">
+          <div class="cost-info-card">
+            <h4>インフラ費用（実費）</h4>
+            <table class="cost-info-table">
+              <tbody>
+                <tr><td>Webサーバー（Vercel）</td><td class="cost-value">約3,000円/月</td></tr>
+                <tr><td>データベース（Supabase）</td><td class="cost-value">約3,800円/月</td></tr>
+                <tr class="subtotal-row"><td>小計</td><td class="cost-value">約7,000円/月</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="cost-info-card">
+            <h4>保守管理費</h4>
+            <table class="cost-info-table">
+              <tbody>
+                <tr><td>保守・管理費</td><td class="cost-value">5,000円/月</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="cost-total-card">
+          <span class="cost-total-label">合計</span>
+          <span class="cost-total-amount">約12,000円/月</span>
+        </div>
+
+        <div class="cost-info-card cost-option-card">
+          <h4>独自ドメイン（オプション）</h4>
+          <ul class="cost-option-list">
+            <li>年1,000〜2,000円</li>
+            <li>短いURLでのご提供が可能になります</li>
+            <li>ご希望の場合は別途ご相談ください</li>
+          </ul>
+        </div>
+
+        <div class="cost-notes">
+          <p>※現在はデモ環境のため上記費用は発生していません</p>
+          <p>※本格運用の際にはご相談ください</p>
+        </div>
+      </div>
+
     </section>
   </main>
 
