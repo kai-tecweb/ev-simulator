@@ -25,13 +25,14 @@ function drawChartUnits() {
   const savings = [];
   for (let u = 1; u <= 10; u++) {
     labels.push(u + '台');
-    const fuel = C.monthlyFuel(s.annualKm, s.fuelEfficiency, s.dieselPrice, u);
-    const power = C.monthlyPower(s.annualKm, s.evEfficiency, u);
-    const elec = C.monthlyElecCost(power, s.routePct, s.homeRate, s.routeRate);
-    const equip = C.monthlyEquipCost(s.equipPrice, u, s.equipDeprecYears);
-    const vehicle = C.monthlyVehicleDiff(s.evPrice, s.dieselPricePerUnit, s.evSubsidy, u, s.vehicleDeprecYears);
-    const maint = C.monthlyMaintenanceDiff(s.dieselMaintenance, s.evMaintenance, u);
-    savings.push(C.monthlySaving(fuel, elec, equip, vehicle, maint));
+    const fuelL = C.monthlyFuelL(s.annualKm, s.fuelEfficiency, u);
+    const fuelCost = C.monthlyFuelCost(fuelL, s.dieselPrice);
+    const chargeKwh = C.monthlyChargeKwh(s.annualKm, s.evEfficiency, u);
+    const chargeCost = C.monthlyChargeCost(chargeKwh, s.homeRate);
+    const basicCharge = C.monthlyBasicChargeCost(s.basicRate, s.capacityRate, s.powerIncrease, u);
+    const energySaving = C.monthlyEnergySaving(fuelCost, chargeCost, basicCharge);
+    const equipCost = -C.monthlyEquipCost(s.equipPrice, u, s.equipDeprecYears);
+    savings.push(C.monthlySaving(energySaving, equipCost));
   }
 
   chartUnits = new Chart(ctx, {

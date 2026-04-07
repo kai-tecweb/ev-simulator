@@ -4,9 +4,9 @@
 
 // 車種マスタ
 const EV_MASTER = {
-  'フォロフライ F11VS': { battery: 82, efficiency: 7.8, range: 350, price: 6000000, subsidy: 2042000, maintenance: 80000 },
-  'ZOモーターズ（仮）': { battery: 60, efficiency: 7.0, range: 280, price: 5500000, subsidy: 1700000, maintenance: 75000 },
-  '日野ディトロ（仮）': { battery: 100, efficiency: 8.0, range: 400, price: 7500000, subsidy: 2500000, maintenance: 90000 },
+  'フォロフライ F11VS': { battery: 82, efficiency: 5.0, range: 350, price: 11908000, subsidy: 5808000, maintenance: 80000 },
+  'ZOモーターズ（仮）': { battery: 60, efficiency: 5.0, range: 280, price: 5500000, subsidy: 1700000, maintenance: 75000 },
+  '日野ディトロ（仮）': { battery: 100, efficiency: 5.5, range: 400, price: 7500000, subsidy: 2500000, maintenance: 90000 },
 };
 
 // 確認事項マスタ（事前確認事項 1-6）
@@ -65,27 +65,32 @@ ZOOM_CONFIRM_SECTIONS.forEach((sec) => sec.items.forEach((item) => { confirmStat
 const FORM_IDS = [
   'evModel', 'units', 'annualKm', 'fuelEfficiency', 'dieselPrice', 'dieselPricePerUnit',
   'dieselMaintenance', 'vehicleDeprecYears', 'chargerOutput', 'equipPrice', 'equipDeprecYears',
-  'homeRate', 'routeRate', 'routePct', 'chargeTimeSlot', 'buyPrice', 'sellPrice'
+  'homeRate', 'basicRate', 'capacityRate', 'powerIncrease', 'chargeHours',
+  'routeRate', 'routePct', 'chargeTimeSlot', 'buyPrice', 'sellPrice'
 ];
 
 function getFormState() {
   const units = parseInt(document.getElementById('units').value, 10) || 1;
   const annualKm = parseInt(document.getElementById('annualKm').value, 10) || 0;
-  const fuelEfficiency = parseFloat(document.getElementById('fuelEfficiency').value) || 12;
+  const fuelEfficiency = parseFloat(document.getElementById('fuelEfficiency').value) || 10;
   const dieselPrice = parseFloat(document.getElementById('dieselPrice').value) || 0;
   const dieselPricePerUnit = parseInt(document.getElementById('dieselPricePerUnit').value, 10) || 0;
   const dieselMaintenance = parseInt(document.getElementById('dieselMaintenance').value, 10) || 0;
   const vehicleDeprecYears = parseInt(document.getElementById('vehicleDeprecYears').value, 10) || 7;
   const equipPrice = parseInt(document.getElementById('equipPrice').value, 10) || 0;
-  const equipDeprecYears = parseInt(document.getElementById('equipDeprecYears').value, 10) || 5;
+  const equipDeprecYears = parseInt(document.getElementById('equipDeprecYears').value, 10) || 7;
   const homeRate = parseFloat(document.getElementById('homeRate').value) || 0;
+  const basicRate = parseFloat(document.getElementById('basicRate').value) || 0;
+  const capacityRate = parseFloat(document.getElementById('capacityRate').value) || 0;
+  const powerIncrease = parseFloat(document.getElementById('powerIncrease').value) || 0;
+  const chargeHours = parseFloat(document.getElementById('chargeHours').value) || 0;
   const routeRate = parseFloat(document.getElementById('routeRate').value) || 0;
   const routePct = parseFloat(document.getElementById('routePct').value) || 0;
   const buyPrice = parseFloat(document.getElementById('buyPrice').value) || 0;
   const sellPrice = parseFloat(document.getElementById('sellPrice').value) || 0;
 
   const evModelKey = document.getElementById('evModel').value;
-  const ev = EV_MASTER[evModelKey] || { efficiency: 7.8, price: 6000000, subsidy: 0, maintenance: 80000 };
+  const ev = EV_MASTER[evModelKey] || { efficiency: 5.0, price: 11908000, subsidy: 0, maintenance: 80000 };
 
   return {
     evModel: evModelKey,
@@ -103,6 +108,10 @@ function getFormState() {
     equipPrice,
     equipDeprecYears,
     homeRate,
+    basicRate,
+    capacityRate,
+    powerIncrease,
+    chargeHours,
     routeRate,
     routePct,
     buyPrice,
@@ -115,19 +124,33 @@ function computeAndUpdateSummary() {
   const C = window.EVCalc;
   if (!C) return;
 
-  const monthlyFuelCost = C.monthlyFuel(s.annualKm, s.fuelEfficiency, s.dieselPrice, s.units);
-  const monthlyPowerKwh = C.monthlyPower(s.annualKm, s.evEfficiency, s.units);
-  const monthlyElecCostVal = C.monthlyElecCost(monthlyPowerKwh, s.routePct, s.homeRate, s.routeRate);
-  const equipCost = C.monthlyEquipCost(s.equipPrice, s.units, s.equipDeprecYears);
-  const vehicleDiff = C.monthlyVehicleDiff(s.evPrice, s.dieselPricePerUnit, s.evSubsidy, s.units, s.vehicleDeprecYears);
-  const maintDiff = C.monthlyMaintenanceDiff(s.dieselMaintenance, s.evMaintenance, s.units);
+  // 新ロジック：月間燃料費
+  const fuelL = C.monthlyFuelL(s.annualKm, s.fuelEfficiency, s.units);
+  const fuelCost = C.monthlyFuelCost(fuelL, s.dieselPrice);
 
-  const saving = C.monthlySaving(monthlyFuelCost, monthlyElecCostVal, equipCost, vehicleDiff, maintDiff);
-  const breakEven = C.breakEvenPrice(s.buyPrice, 0, monthlyPowerKwh);
+  // 新ロジック：月間充電コスト
+  const chargeKwh = C.monthlyChargeKwh(s.annualKm, s.evEfficiency, s.units);
+  const chargeCost = C.monthlyChargeCost(chargeKwh, s.homeRate);
+  const basicChargeCost = C.monthlyBasicChargeCost(s.basicRate, s.capacityRate, s.powerIncrease, s.units);
+
+  // 月間エネルギーコスト削減額
+  const energySaving = C.monthlyEnergySaving(fuelCost, chargeCost, basicChargeCost);
+
+  // 充電設備 月間償却費（負値）
+  const equipCost = -C.monthlyEquipCost(s.equipPrice, s.units, s.equipDeprecYears);
+
+  // 月間削減額
+  const saving = C.monthlySaving(energySaving, equipCost);
+
+  // 損益分岐（旧互換）
+  const breakEven = C.breakEvenPrice(s.buyPrice, 0, chargeKwh);
+
+  // 投資回収期間
   const payback = C.paybackYears(s.evPrice, s.dieselPricePerUnit, s.evSubsidy, s.equipPrice, s.units, saving);
 
+  // CO2
   const annualFuelL = (s.annualKm / s.fuelEfficiency) * s.units;
-  const annualPowerKwh = monthlyPowerKwh * 12;
+  const annualPowerKwh = chargeKwh * 12;
   const co2D = C.co2Diesel(annualFuelL);
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = co2D - co2E;
@@ -145,17 +168,30 @@ function updateResultTab() {
   const C = window.EVCalc;
   if (!C) return;
 
-  const monthlyFuelCost = C.monthlyFuel(s.annualKm, s.fuelEfficiency, s.dieselPrice, s.units);
-  const monthlyPowerKwh = C.monthlyPower(s.annualKm, s.evEfficiency, s.units);
-  const monthlyElecCostVal = C.monthlyElecCost(monthlyPowerKwh, s.routePct, s.homeRate, s.routeRate);
-  const equipCost = C.monthlyEquipCost(s.equipPrice, s.units, s.equipDeprecYears);
+  // 新ロジック：月間燃料費
+  const fuelL = C.monthlyFuelL(s.annualKm, s.fuelEfficiency, s.units);
+  const fuelCost = C.monthlyFuelCost(fuelL, s.dieselPrice);
+
+  // 新ロジック：月間充電コスト
+  const chargeKwh = C.monthlyChargeKwh(s.annualKm, s.evEfficiency, s.units);
+  const chargeCost = C.monthlyChargeCost(chargeKwh, s.homeRate);
+  const basicChargeCost = C.monthlyBasicChargeCost(s.basicRate, s.capacityRate, s.powerIncrease, s.units);
+  const totalChargeCost = chargeCost + basicChargeCost;
+
+  // エネルギーコスト削減額
+  const energySaving = C.monthlyEnergySaving(fuelCost, chargeCost, basicChargeCost);
+
+  // 設備費
+  const equipCostVal = C.monthlyEquipCost(s.equipPrice, s.units, s.equipDeprecYears);
+
+  // 車両関連（旧互換：コスト比較表用）
   const vehicleDiff = C.monthlyVehicleDiff(s.evPrice, s.dieselPricePerUnit, s.evSubsidy, s.units, s.vehicleDeprecYears);
   const dieselMaintTotal = s.dieselMaintenance * s.units;
   const evMaintTotal = s.evMaintenance * s.units;
   const maintDiff = C.monthlyMaintenanceDiff(s.dieselMaintenance, s.evMaintenance, s.units);
 
-  const totalBefore = monthlyFuelCost + dieselMaintTotal;
-  const totalAfter = monthlyElecCostVal + equipCost + vehicleDiff + evMaintTotal;
+  const totalBefore = fuelCost + dieselMaintTotal;
+  const totalAfter = totalChargeCost + equipCostVal + vehicleDiff + evMaintTotal;
   const totalDiff = totalBefore - totalAfter;
 
   const fmt = (n) => (n != null && !Number.isNaN(n) ? '¥' + Math.round(n).toLocaleString() : '—');
@@ -165,10 +201,10 @@ function updateResultTab() {
     return v >= 0 ? '▲' + v.toLocaleString() : v.toLocaleString();
   };
 
-  document.getElementById('cost-fuel-before').textContent = fmt(monthlyFuelCost);
-  document.getElementById('cost-elec-after').textContent = fmt(monthlyElecCostVal);
-  document.getElementById('cost-fuel-diff').textContent = fmtDiff(monthlyFuelCost - monthlyElecCostVal);
-  document.getElementById('cost-equip-after').textContent = fmt(equipCost);
+  document.getElementById('cost-fuel-before').textContent = fmt(fuelCost);
+  document.getElementById('cost-elec-after').textContent = fmt(totalChargeCost);
+  document.getElementById('cost-fuel-diff').textContent = fmtDiff(fuelCost - totalChargeCost);
+  document.getElementById('cost-equip-after').textContent = fmt(equipCostVal);
   document.getElementById('cost-maint-before').textContent = fmt(dieselMaintTotal);
   document.getElementById('cost-maint-after').textContent = fmt(evMaintTotal);
   document.getElementById('cost-maint-diff').textContent = fmtDiff(maintDiff);
@@ -179,12 +215,11 @@ function updateResultTab() {
 
   // CO2パネル
   const annualFuelL = (s.annualKm / s.fuelEfficiency) * s.units;
-  const annualPowerKwh = monthlyPowerKwh * 12;
+  const annualPowerKwh = chargeKwh * 12;
   const co2D = C.co2Diesel(annualFuelL);
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = Math.max(0, co2D - co2E);
   const pct = co2D > 0 ? ((co2Reduce / co2D) * 100).toFixed(0) : '0';
-  // 杉1本のCO2吸収量は約0.0084 t-CO2/年 → 削減量(t-CO2/年) ÷ 0.0084 = 本数
   const CEDAR_CO2_PER_TREE = 0.0084;
   const trees = Math.round(co2Reduce / CEDAR_CO2_PER_TREE);
 

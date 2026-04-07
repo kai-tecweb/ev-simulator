@@ -36,15 +36,15 @@
           </div>
           <div class="form-group">
             <label for="annualKm">年間走行距離（km）</label>
-            <input type="number" id="annualKm" name="annualKm" min="1" value="50000">
+            <input type="number" id="annualKm" name="annualKm" min="1" value="48000">
           </div>
           <div class="form-group">
             <label for="fuelEfficiency">軽油燃費（km/L）</label>
-            <input type="number" id="fuelEfficiency" name="fuelEfficiency" min="0.1" step="0.1" value="12">
+            <input type="number" id="fuelEfficiency" name="fuelEfficiency" min="0.1" step="0.1" value="10">
           </div>
           <div class="form-group">
             <label for="dieselPrice">軽油単価（円/L）</label>
-            <input type="number" id="dieselPrice" name="dieselPrice" min="0" value="160">
+            <input type="number" id="dieselPrice" name="dieselPrice" min="0" step="0.1" value="115.6">
           </div>
           <div class="form-group">
             <label for="dieselPricePerUnit">現行車両価格（円/台）</label>
@@ -70,17 +70,33 @@
           </div>
           <div class="form-group">
             <label for="equipPrice">1台あたり設備費・工事込み（円）</label>
-            <input type="number" id="equipPrice" name="equipPrice" min="0" value="500000">
+            <input type="number" id="equipPrice" name="equipPrice" min="0" value="700000">
           </div>
           <div class="form-group">
             <label for="equipDeprecYears">設備償却年数（年）</label>
-            <input type="number" id="equipDeprecYears" name="equipDeprecYears" min="1" value="5">
+            <input type="number" id="equipDeprecYears" name="equipDeprecYears" min="1" value="7">
           </div>
 
           <h2>電力・充電コスト</h2>
           <div class="form-group">
-            <label for="homeRate">自家充電単価（円/kWh）</label>
-            <input type="number" id="homeRate" name="homeRate" min="0" step="0.01" value="23.97">
+            <label for="homeRate">充電単価（円/kWh）</label>
+            <input type="number" id="homeRate" name="homeRate" min="0" step="0.01" value="23.88">
+          </div>
+          <div class="form-group">
+            <label for="basicRate">基本料金単価（円/kWh）</label>
+            <input type="number" id="basicRate" name="basicRate" min="0" step="0.01" value="313.08">
+          </div>
+          <div class="form-group">
+            <label for="capacityRate">容量拠出金（円/kWh）</label>
+            <input type="number" id="capacityRate" name="capacityRate" min="0" step="0.01" value="172">
+          </div>
+          <div class="form-group">
+            <label for="powerIncrease">EV1台あたり電力増量（kWh）</label>
+            <input type="number" id="powerIncrease" name="powerIncrease" min="0" step="0.1" value="6">
+          </div>
+          <div class="form-group">
+            <label for="chargeHours">充電時間（時間/日）</label>
+            <input type="number" id="chargeHours" name="chargeHours" min="0" step="0.5" value="7">
           </div>
           <div class="form-group">
             <label for="routeRate">経路充電単価（円/kWh）</label>
