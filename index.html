@@ -311,25 +311,32 @@
 
       <hr class="section-divider">
 
-      <!-- セクション②：ご確認・未確定事項 -->
-      <h3 class="confirm-section-title">ご確認・未確定事項</h3>
-      <table class="confirm-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>確認事項</th>
-            <th>重要度</th>
-            <th>ステータス</th>
-          </tr>
-        </thead>
-        <tbody id="confirm-tbody">
-          <!-- main.js で生成 -->
-        </tbody>
-      </table>
-      <h3 class="confirm-section-title">Zoom打合せ確認事項</h3>
-      <div id="zoom-confirm-content">
-        <!-- main.js で生成 -->
-      </div>
+      <!-- セクション②：ご確認・未確定事項（アコーディオン） -->
+      <details class="confirm-accordion">
+        <summary class="confirm-accordion-summary">
+          <span>ご確認・未確定事項（全19項目 確認済み）</span>
+        </summary>
+        <div class="confirm-accordion-body">
+          <h3 class="confirm-section-title">事前確認事項</h3>
+          <table class="confirm-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>確認事項</th>
+                <th>重要度</th>
+                <th>ステータス</th>
+              </tr>
+            </thead>
+            <tbody id="confirm-tbody">
+              <!-- main.js で生成 -->
+            </tbody>
+          </table>
+          <h3 class="confirm-section-title">Zoom打合せ確認事項</h3>
+          <div id="zoom-confirm-content">
+            <!-- main.js で生成 -->
+          </div>
+        </div>
+      </details>
 
       <hr class="section-divider">
 

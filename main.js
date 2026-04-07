@@ -58,8 +58,8 @@ const ZOOM_CONFIRM_SECTIONS = [
 
 // 確認事項のステータス（id -> 未確認|確認中|確認済み）
 let confirmStatus = {};
-CONFIRM_ITEMS.forEach((item) => { confirmStatus[item.id] = '未確認'; });
-ZOOM_CONFIRM_SECTIONS.forEach((sec) => sec.items.forEach((item) => { confirmStatus[item.id] = confirmStatus[item.id] || '未確認'; }));
+CONFIRM_ITEMS.forEach((item) => { confirmStatus[item.id] = '確認済み'; });
+ZOOM_CONFIRM_SECTIONS.forEach((sec) => sec.items.forEach((item) => { confirmStatus[item.id] = confirmStatus[item.id] || '確認済み'; }));
 
 // フォーム要素のID一覧
 const FORM_IDS = [
