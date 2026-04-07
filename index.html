@@ -26,104 +26,115 @@
     <section id="tab-input" class="tab-panel active">
       <div class="two-column">
         <div class="column-form">
-          <h2>車両情報</h2>
-          <div class="form-group">
-            <label for="evModel">EV車種</label>
-            <select id="evModel" name="evModel"></select>
-          </div>
-          <div class="form-group">
-            <label for="units">台数</label>
-            <input type="number" id="units" name="units" min="1" max="99" value="3">
-          </div>
-          <div class="form-group">
-            <label for="annualKm">年間走行距離（km）</label>
-            <input type="number" id="annualKm" name="annualKm" min="1" value="48000">
-          </div>
-          <div class="form-group">
-            <label for="fuelEfficiency">軽油燃費（km/L）</label>
-            <input type="number" id="fuelEfficiency" name="fuelEfficiency" min="0.1" step="0.1" value="10">
-          </div>
-          <div class="form-group">
-            <label for="dieselPrice">軽油単価（円/L）</label>
-            <input type="number" id="dieselPrice" name="dieselPrice" min="0" step="0.1" value="115.6">
-          </div>
-          <div class="form-group">
-            <label for="dieselPricePerUnit">現行車両価格（円/台）</label>
-            <input type="number" id="dieselPricePerUnit" name="dieselPricePerUnit" min="0" value="5000000">
-          </div>
-          <div class="form-group">
-            <label for="dieselMaintenance">現行車両維持費（円/台/月）</label>
-            <input type="number" id="dieselMaintenance" name="dieselMaintenance" min="0" value="150000">
-          </div>
-          <div class="form-group">
-            <label for="vehicleDeprecYears">車両償却年数（年）</label>
-            <input type="number" id="vehicleDeprecYears" name="vehicleDeprecYears" min="1" value="7">
+          <nav class="sub-tabs">
+            <button type="button" class="sub-tab-btn active" data-subtab="vehicle">車両情報</button>
+            <button type="button" class="sub-tab-btn" data-subtab="equip">充電設備</button>
+            <button type="button" class="sub-tab-btn" data-subtab="power">電力・コスト</button>
+            <button type="button" class="sub-tab-btn" data-subtab="shinidemi">新出光側</button>
+          </nav>
+
+          <div class="sub-tab-panel active" id="subtab-vehicle">
+            <div class="form-group">
+              <label for="evModel">EV車種</label>
+              <select id="evModel" name="evModel"></select>
+            </div>
+            <div class="form-group">
+              <label for="units">台数</label>
+              <input type="number" id="units" name="units" min="1" max="99" value="3">
+            </div>
+            <div class="form-group">
+              <label for="annualKm">年間走行距離（km）</label>
+              <input type="number" id="annualKm" name="annualKm" min="1" value="48000">
+            </div>
+            <div class="form-group">
+              <label for="fuelEfficiency">軽油燃費（km/L）</label>
+              <input type="number" id="fuelEfficiency" name="fuelEfficiency" min="0.1" step="0.1" value="10">
+            </div>
+            <div class="form-group">
+              <label for="dieselPrice">軽油単価（円/L）</label>
+              <input type="number" id="dieselPrice" name="dieselPrice" min="0" step="0.1" value="115.6">
+            </div>
+            <div class="form-group">
+              <label for="dieselPricePerUnit">現行車両価格（円/台）</label>
+              <input type="number" id="dieselPricePerUnit" name="dieselPricePerUnit" min="0" value="5000000">
+            </div>
+            <div class="form-group">
+              <label for="dieselMaintenance">現行車両維持費（円/台/月）</label>
+              <input type="number" id="dieselMaintenance" name="dieselMaintenance" min="0" value="150000">
+            </div>
+            <div class="form-group">
+              <label for="vehicleDeprecYears">車両償却年数（年）</label>
+              <input type="number" id="vehicleDeprecYears" name="vehicleDeprecYears" min="1" value="7">
+            </div>
           </div>
 
-          <h2>充電設備情報</h2>
-          <div class="form-group">
-            <label for="chargerOutput">充電器出力</label>
-            <select id="chargerOutput" name="chargerOutput">
-              <option value="6">6kW</option>
-              <option value="8">8kW</option>
-              <option value="10" selected>10kW</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="equipPrice">1台あたり設備費・工事込み（円）</label>
-            <input type="number" id="equipPrice" name="equipPrice" min="0" value="700000">
-          </div>
-          <div class="form-group">
-            <label for="equipDeprecYears">設備償却年数（年）</label>
-            <input type="number" id="equipDeprecYears" name="equipDeprecYears" min="1" value="7">
-          </div>
-
-          <h2>電力・充電コスト</h2>
-          <div class="form-group">
-            <label for="homeRate">充電単価（円/kWh）</label>
-            <input type="number" id="homeRate" name="homeRate" min="0" step="0.01" value="23.88">
-          </div>
-          <div class="form-group">
-            <label for="basicRate">基本料金単価（円/kWh）</label>
-            <input type="number" id="basicRate" name="basicRate" min="0" step="0.01" value="313.08">
-          </div>
-          <div class="form-group">
-            <label for="capacityRate">容量拠出金（円/kWh）</label>
-            <input type="number" id="capacityRate" name="capacityRate" min="0" step="0.01" value="172">
-          </div>
-          <div class="form-group">
-            <label for="powerIncrease">EV1台あたり電力増量（kWh）</label>
-            <input type="number" id="powerIncrease" name="powerIncrease" min="0" step="0.1" value="6">
-          </div>
-          <div class="form-group">
-            <label for="chargeHours">充電時間（時間/日）</label>
-            <input type="number" id="chargeHours" name="chargeHours" min="0" step="0.5" value="7">
-          </div>
-          <div class="form-group">
-            <label for="routeRate">経路充電単価（円/kWh）</label>
-            <input type="number" id="routeRate" name="routeRate" min="0" value="50">
-          </div>
-          <div class="form-group">
-            <label for="routePct">経路充電割合（<span id="routePctValue">20</span>%）</label>
-            <input type="range" id="routePct" name="routePct" min="0" max="100" value="20">
-          </div>
-          <div class="form-group">
-            <label for="chargeTimeSlot">充電時間帯</label>
-            <select id="chargeTimeSlot" name="chargeTimeSlot">
-              <option value="night" selected>深夜中心</option>
-              <option value="day">昼間中心</option>
-              <option value="mixed">混在</option>
-            </select>
+          <div class="sub-tab-panel" id="subtab-equip">
+            <div class="form-group">
+              <label for="chargerOutput">充電器出力</label>
+              <select id="chargerOutput" name="chargerOutput">
+                <option value="6">6kW</option>
+                <option value="8">8kW</option>
+                <option value="10" selected>10kW</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="equipPrice">1台あたり設備費・工事込み（円）</label>
+              <input type="number" id="equipPrice" name="equipPrice" min="0" value="700000">
+            </div>
+            <div class="form-group">
+              <label for="equipDeprecYears">設備償却年数（年）</label>
+              <input type="number" id="equipDeprecYears" name="equipDeprecYears" min="1" value="7">
+            </div>
           </div>
 
-          <h2>新出光側（電力販売条件）</h2>
-          <div class="form-group">
-            <label for="buyPrice">電力仕入単価（円/kWh）</label>
-            <input type="number" id="buyPrice" name="buyPrice" min="0" step="0.01" value="15">
+          <div class="sub-tab-panel" id="subtab-power">
+            <div class="form-group">
+              <label for="homeRate">充電単価（円/kWh）</label>
+              <input type="number" id="homeRate" name="homeRate" min="0" step="0.01" value="23.88">
+            </div>
+            <div class="form-group">
+              <label for="basicRate">基本料金単価（円/kWh）</label>
+              <input type="number" id="basicRate" name="basicRate" min="0" step="0.01" value="313.08">
+            </div>
+            <div class="form-group">
+              <label for="capacityRate">容量拠出金（円/kWh）</label>
+              <input type="number" id="capacityRate" name="capacityRate" min="0" step="0.01" value="172">
+            </div>
+            <div class="form-group">
+              <label for="powerIncrease">EV1台あたり電力増量（kWh）</label>
+              <input type="number" id="powerIncrease" name="powerIncrease" min="0" step="0.1" value="6">
+            </div>
+            <div class="form-group">
+              <label for="chargeHours">充電時間（時間/日）</label>
+              <input type="number" id="chargeHours" name="chargeHours" min="0" step="0.5" value="7">
+            </div>
+            <div class="form-group">
+              <label for="routeRate">経路充電単価（円/kWh）</label>
+              <input type="number" id="routeRate" name="routeRate" min="0" value="50">
+            </div>
+            <div class="form-group">
+              <label for="routePct">経路充電割合（<span id="routePctValue">20</span>%）</label>
+              <input type="range" id="routePct" name="routePct" min="0" max="100" value="20">
+            </div>
+            <div class="form-group">
+              <label for="chargeTimeSlot">充電時間帯</label>
+              <select id="chargeTimeSlot" name="chargeTimeSlot">
+                <option value="night" selected>深夜中心</option>
+                <option value="day">昼間中心</option>
+                <option value="mixed">混在</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="sellPrice">顧客への販売単価（円/kWh）</label>
-            <input type="number" id="sellPrice" name="sellPrice" min="0" step="0.01" value="23.97">
+
+          <div class="sub-tab-panel" id="subtab-shinidemi">
+            <div class="form-group">
+              <label for="buyPrice">電力仕入単価（円/kWh）</label>
+              <input type="number" id="buyPrice" name="buyPrice" min="0" step="0.01" value="15">
+            </div>
+            <div class="form-group">
+              <label for="sellPrice">顧客への販売単価（円/kWh）</label>
+              <input type="number" id="sellPrice" name="sellPrice" min="0" step="0.01" value="23.97">
+            </div>
           </div>
         </div>
         <div class="column-summary">
