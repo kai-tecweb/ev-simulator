@@ -17,6 +17,7 @@
   <nav class="tabs">
     <button type="button" class="tab-btn active" data-tab="input">基本情報入力</button>
     <button type="button" class="tab-btn" data-tab="result">試算結果ダッシュボード</button>
+    <button type="button" class="tab-btn" data-tab="clients">顧客管理</button>
     <button type="button" class="tab-btn" data-tab="confirm">確認事項</button>
   </nav>
 
@@ -228,7 +229,59 @@
       </div>
     </section>
 
-    <!-- タブ③ 確認事項 -->
+    <!-- タブ③ 顧客管理 -->
+    <section id="tab-clients" class="tab-panel">
+      <div class="client-register-wrap">
+        <h2>顧客登録</h2>
+        <p class="client-register-note">現在の入力パラメータを保存して顧客専用URLを発行します</p>
+        <div class="client-form-grid">
+          <div class="form-group">
+            <label for="clientCompany">会社名 <span class="required">*</span></label>
+            <input type="text" id="clientCompany" placeholder="例: 株式会社○○運送">
+          </div>
+          <div class="form-group">
+            <label for="clientContact">担当者名 <span class="required">*</span></label>
+            <input type="text" id="clientContact" placeholder="例: 山田 太郎">
+          </div>
+          <div class="form-group">
+            <label for="clientPhone">電話番号</label>
+            <input type="tel" id="clientPhone" placeholder="例: 03-1234-5678">
+          </div>
+          <div class="form-group">
+            <label for="clientEmail">メールアドレス</label>
+            <input type="email" id="clientEmail" placeholder="例: yamada@example.com">
+          </div>
+        </div>
+        <button type="button" id="btn-register-client" class="btn-primary">登録する</button>
+        <div id="client-register-result" class="client-register-result" style="display:none;"></div>
+      </div>
+
+      <div class="client-list-wrap">
+        <h2>顧客一覧</h2>
+        <div id="client-loading" class="loading-spinner" style="display:none;">
+          <div class="spinner"></div>
+          <span>読み込み中...</span>
+        </div>
+        <div id="client-error" class="error-message" style="display:none;"></div>
+        <table class="client-table" id="client-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>会社名</th>
+              <th>担当者名</th>
+              <th>電話番号</th>
+              <th>メールアドレス</th>
+              <th>登録日</th>
+              <th>専用URL</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="client-tbody"></tbody>
+        </table>
+        <p id="client-empty" class="client-empty" style="display:none;">登録された顧客はありません</p>
+      </div>
+    </section>
+
+    <!-- タブ④ 確認事項 -->
     <section id="tab-confirm" class="tab-panel">
       <h3 class="confirm-section-title">事前確認事項</h3>
       <table class="confirm-table">
@@ -253,10 +306,12 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="data/dummy_power.js"></script>
   <script src="calc.js"></script>
   <script src="chart-init.js"></script>
   <script src="export.js"></script>
+  <script src="supabase.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

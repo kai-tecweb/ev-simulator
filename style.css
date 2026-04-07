@@ -345,3 +345,372 @@ body {
   border-color: var(--color-main);
   color: var(--color-main);
 }
+
+/* 顧客管理タブ */
+.client-register-wrap,
+.client-list-wrap {
+  background: var(--color-card);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-border);
+}
+
+.client-register-wrap h2,
+.client-list-wrap h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-main);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.client-register-note {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0 0 1rem;
+}
+
+.client-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 700px) {
+  .client-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.client-form-grid .form-group input {
+  max-width: 100%;
+}
+
+.required {
+  color: #e53e3e;
+  font-weight: 600;
+}
+
+.client-register-result {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.client-register-result.success {
+  background: rgba(0, 166, 81, 0.1);
+  border: 1px solid var(--color-accent);
+  color: #065f46;
+}
+
+.client-register-result.error {
+  background: rgba(229, 62, 62, 0.1);
+  border: 1px solid #e53e3e;
+  color: #9b2c2c;
+}
+
+.client-url-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  background: var(--color-bg);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.client-url-box .btn-copy {
+  flex-shrink: 0;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-card);
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.client-url-box .btn-copy:hover {
+  background: var(--color-bg);
+}
+
+.client-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.client-table th,
+.client-table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.client-table th {
+  background: var(--color-main);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.client-table tbody tr:hover {
+  background: rgba(0, 48, 135, 0.03);
+}
+
+.client-table .btn-action {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-card);
+  cursor: pointer;
+  font-size: 0.75rem;
+  margin-right: 0.25rem;
+}
+
+.client-table .btn-action:hover {
+  background: var(--color-bg);
+}
+
+.client-table .btn-action.delete {
+  color: #e53e3e;
+  border-color: #e53e3e;
+}
+
+.client-table .btn-action.delete:hover {
+  background: rgba(229, 62, 62, 0.08);
+}
+
+.client-empty {
+  text-align: center;
+  color: #64748b;
+  padding: 2rem;
+  font-size: 0.9rem;
+}
+
+/* ローディングスピナー */
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-main);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* エラーメッセージ */
+.error-message {
+  padding: 1rem;
+  background: rgba(229, 62, 62, 0.1);
+  border: 1px solid #e53e3e;
+  border-radius: 6px;
+  color: #9b2c2c;
+  font-size: 0.9rem;
+  margin: 1rem 0;
+}
+
+/* 編集モーダル */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--color-card);
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-content h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: var(--color-main);
+}
+
+.modal-content .form-group {
+  margin-bottom: 0.75rem;
+}
+
+.modal-content .form-group input {
+  max-width: 100%;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn-secondary {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-card);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.btn-secondary:hover {
+  background: var(--color-bg);
+}
+
+/* ===== 顧客専用ページ（client.html） ===== */
+.client-header {
+  background: var(--color-main);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.client-header h1 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.client-header .company-name {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.client-page-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* 台数選択ボタン */
+.units-select-wrap {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.units-select-wrap h2 {
+  font-size: 1rem;
+  color: var(--color-text);
+  margin: 0 0 1rem;
+  font-weight: 500;
+}
+
+.units-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.units-btn {
+  width: 80px;
+  height: 56px;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-card);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-text);
+  transition: all 0.15s;
+}
+
+.units-btn:hover {
+  border-color: var(--color-main);
+  background: rgba(0, 48, 135, 0.05);
+}
+
+.units-btn.active {
+  border-color: var(--color-main);
+  background: var(--color-main);
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .units-btn {
+    width: 64px;
+    height: 48px;
+    font-size: 1rem;
+  }
+}
+
+/* 顧客ページ サマリーカード */
+.client-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 700px) {
+  .client-summary-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 400px) {
+  .client-summary-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 顧客ページ ローディング全体 */
+.client-page-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1rem;
+  color: #64748b;
+}
+
+.client-page-loading .spinner {
+  width: 40px;
+  height: 40px;
+}
+
+.client-page-error {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #9b2c2c;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 900px) {
+  .chart-row {
+    grid-template-columns: 1fr;
+  }
+}

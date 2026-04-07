@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EV導入効果試算</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="client-header">
+    <h1>EV導入効果試算</h1>
+    <span class="company-name" id="client-company-name"></span>
+  </header>
+
+  <!-- ローディング -->
+  <div id="client-loading" class="client-page-loading">
+    <div class="spinner"></div>
+    <span>データを読み込んでいます...</span>
+  </div>
+
+  <!-- エラー -->
+  <div id="client-error" class="client-page-error" style="display:none;"></div>
+
+  <!-- メインコンテンツ -->
+  <main id="client-main" class="client-page-main" style="display:none;">
+
+    <!-- 台数選択 -->
+    <div class="units-select-wrap">
+      <h2>台数を選択してください</h2>
+      <div class="units-buttons" id="units-buttons"></div>
+    </div>
+
+    <!-- サマリーカード -->
+    <div class="client-summary-cards">
+      <div class="summary-card">
+        <span class="summary-label">月間削減額</span>
+        <span id="cl-summary-saving" class="summary-value">—</span>
+        <span class="summary-unit">円/月</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-label">損益分岐単価</span>
+        <span id="cl-summary-breakeven" class="summary-value">—</span>
+        <span class="summary-unit">円/kWh</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-label">CO2削減量</span>
+        <span id="cl-summary-co2" class="summary-value">—</span>
+        <span class="summary-unit">t-CO2/年</span>
+      </div>
+      <div class="summary-card">
+        <span class="summary-label">投資回収期間</span>
+        <span id="cl-summary-payback" class="summary-value">—</span>
+        <span class="summary-unit">年</span>
+      </div>
+    </div>
+
+    <!-- コスト比較表 -->
+    <div class="cost-table-wrap">
+      <h2>コスト比較表</h2>
+      <table class="cost-table">
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th>導入前（軽油）</th>
+            <th>導入後（EV）</th>
+            <th>差分</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>燃料費・電気代</td>
+            <td id="cl-cost-fuel-before">—</td>
+            <td id="cl-cost-elec-after">—</td>
+            <td id="cl-cost-fuel-diff">—</td>
+          </tr>
+          <tr>
+            <td>充電設備償却費</td>
+            <td>—</td>
+            <td id="cl-cost-equip-after">—</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>車両維持費</td>
+            <td id="cl-cost-maint-before">—</td>
+            <td id="cl-cost-maint-after">—</td>
+            <td id="cl-cost-maint-diff">—</td>
+          </tr>
+          <tr>
+            <td>車両償却費差額</td>
+            <td>—</td>
+            <td id="cl-cost-vehicle-diff">—</td>
+            <td>—</td>
+          </tr>
+          <tr class="total-row">
+            <td>月間合計</td>
+            <td id="cl-cost-total-before">—</td>
+            <td id="cl-cost-total-after">—</td>
+            <td id="cl-cost-total-diff">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- グラフ -->
+    <div class="chart-row">
+      <div class="chart-box">
+        <h3>台数別月間削減額</h3>
+        <canvas id="cl-chart-units"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>新出光側 損益分岐点</h3>
+        <canvas id="cl-chart-shinidemi"></canvas>
+      </div>
+    </div>
+
+    <!-- CO2削減効果 -->
+    <div class="co2-panel">
+      <h3>CO2削減効果</h3>
+      <p>軽油CO2排出量: <span id="cl-co2-diesel">—</span> t-CO2/年</p>
+      <p>EV CO2排出量: <span id="cl-co2-elec">—</span> t-CO2/年</p>
+      <p>削減量: <span id="cl-co2-reduce">—</span>（<span id="cl-co2-pct">—</span>%削減）</p>
+      <p>杉の木換算: 約<span id="cl-co2-trees">—</span>本分</p>
+    </div>
+
+    <!-- Excel出力 -->
+    <div class="export-wrap">
+      <button type="button" id="btn-client-export" class="btn-primary">Excel出力</button>
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="calc.js"></script>
+  <script src="supabase.js"></script>
+  <script src="export.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>

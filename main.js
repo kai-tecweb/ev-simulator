@@ -326,6 +326,7 @@ function setupTabs() {
       const panel = document.getElementById('tab-' + tab);
       if (panel) panel.classList.add('active');
       if (tab === 'result') updateResultTab();
+      if (tab === 'clients') renderClientTab();
       if (tab === 'confirm') renderConfirmTab();
     });
   });
@@ -352,6 +353,227 @@ function setupFormListeners() {
   });
 }
 
+// ===== 顧客管理機能 =====
+
+// 顧客一覧を描画
+async function renderClientTab() {
+  const SC = window.SupabaseClient;
+  if (!SC) return;
+
+  const loading = document.getElementById('client-loading');
+  const errorEl = document.getElementById('client-error');
+  const table = document.getElementById('client-table');
+  const tbody = document.getElementById('client-tbody');
+  const empty = document.getElementById('client-empty');
+
+  loading.style.display = 'flex';
+  errorEl.style.display = 'none';
+  table.style.display = 'none';
+  empty.style.display = 'none';
+
+  try {
+    const clients = await SC.getClients();
+    loading.style.display = 'none';
+
+    if (!clients || clients.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+
+    table.style.display = 'table';
+    tbody.innerHTML = clients.map((c) => {
+      const date = new Date(c.created_at);
+      const dateStr = date.getFullYear() + '/' + String(date.getMonth() + 1).padStart(2, '0') + '/' + String(date.getDate()).padStart(2, '0');
+      const url = SC.getClientUrl(c.id);
+      return `
+        <tr>
+          <td>${escapeHtml(c.company_name)}</td>
+          <td>${escapeHtml(c.contact_name)}</td>
+          <td>${escapeHtml(c.phone || '—')}</td>
+          <td>${escapeHtml(c.email || '—')}</td>
+          <td>${dateStr}</td>
+          <td>
+            <div class="client-url-box">
+              <span class="url-text">${url}</span>
+              <button type="button" class="btn-copy" data-url="${url}">コピー</button>
+            </div>
+          </td>
+          <td>
+            <button type="button" class="btn-action" data-id="${c.id}" data-action="edit">編集</button>
+            <button type="button" class="btn-action delete" data-id="${c.id}" data-action="delete">削除</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // コピーボタン
+    tbody.querySelectorAll('.btn-copy').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(btn.dataset.url).then(() => {
+          btn.textContent = 'OK!';
+          setTimeout(() => { btn.textContent = 'コピー'; }, 1500);
+        });
+      });
+    });
+
+    // 操作ボタン
+    tbody.querySelectorAll('.btn-action').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const action = btn.dataset.action;
+        if (action === 'delete') handleDeleteClient(id);
+        if (action === 'edit') handleEditClient(id, clients.find((c) => c.id === id));
+      });
+    });
+
+  } catch (err) {
+    loading.style.display = 'none';
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  }
+}
+
+// HTML エスケープ
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// 顧客登録
+async function handleRegisterClient() {
+  const SC = window.SupabaseClient;
+  if (!SC) return;
+
+  const company = document.getElementById('clientCompany').value.trim();
+  const contact = document.getElementById('clientContact').value.trim();
+  const phone = document.getElementById('clientPhone').value.trim();
+  const email = document.getElementById('clientEmail').value.trim();
+  const resultEl = document.getElementById('client-register-result');
+
+  if (!company || !contact) {
+    resultEl.className = 'client-register-result error';
+    resultEl.textContent = '会社名と担当者名は必須です';
+    resultEl.style.display = 'block';
+    return;
+  }
+
+  const params = getFormState();
+  const btn = document.getElementById('btn-register-client');
+  btn.disabled = true;
+  btn.textContent = '登録中...';
+
+  try {
+    const client = await SC.createClient({
+      company_name: company,
+      contact_name: contact,
+      phone: phone || null,
+      email: email || null,
+      params: params,
+    });
+
+    const url = SC.getClientUrl(client.id);
+    resultEl.className = 'client-register-result success';
+    resultEl.innerHTML = '顧客を登録しました。<br>' +
+      '<div class="client-url-box"><span>' + url + '</span>' +
+      '<button type="button" class="btn-copy" onclick="navigator.clipboard.writeText(\'' + url + '\').then(() => { this.textContent=\'OK!\'; setTimeout(() => this.textContent=\'コピー\', 1500); })">コピー</button></div>';
+    resultEl.style.display = 'block';
+
+    // フォームクリア
+    document.getElementById('clientCompany').value = '';
+    document.getElementById('clientContact').value = '';
+    document.getElementById('clientPhone').value = '';
+    document.getElementById('clientEmail').value = '';
+
+    // 一覧再描画
+    renderClientTab();
+
+  } catch (err) {
+    resultEl.className = 'client-register-result error';
+    resultEl.textContent = err.message;
+    resultEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '登録する';
+  }
+}
+
+// 顧客削除
+async function handleDeleteClient(id) {
+  if (!confirm('この顧客を削除しますか？')) return;
+  const SC = window.SupabaseClient;
+  try {
+    await SC.deleteClient(id);
+    renderClientTab();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+// 顧客編集（モーダル表示）
+function handleEditClient(id, client) {
+  if (!client) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal-content">
+      <h3>顧客情報の編集</h3>
+      <div class="form-group">
+        <label>会社名 <span class="required">*</span></label>
+        <input type="text" id="edit-company" value="${escapeHtml(client.company_name)}">
+      </div>
+      <div class="form-group">
+        <label>担当者名 <span class="required">*</span></label>
+        <input type="text" id="edit-contact" value="${escapeHtml(client.contact_name)}">
+      </div>
+      <div class="form-group">
+        <label>電話番号</label>
+        <input type="text" id="edit-phone" value="${escapeHtml(client.phone || '')}">
+      </div>
+      <div class="form-group">
+        <label>メールアドレス</label>
+        <input type="email" id="edit-email" value="${escapeHtml(client.email || '')}">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="edit-cancel">キャンセル</button>
+        <button type="button" class="btn-primary" id="edit-save">保存</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  overlay.querySelector('#edit-cancel').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+  overlay.querySelector('#edit-save').addEventListener('click', async () => {
+    const company = overlay.querySelector('#edit-company').value.trim();
+    const contact = overlay.querySelector('#edit-contact').value.trim();
+    if (!company || !contact) { alert('会社名と担当者名は必須です'); return; }
+
+    const saveBtn = overlay.querySelector('#edit-save');
+    saveBtn.disabled = true;
+    saveBtn.textContent = '保存中...';
+
+    try {
+      const SC = window.SupabaseClient;
+      await SC.updateClient(id, {
+        company_name: company,
+        contact_name: contact,
+        phone: overlay.querySelector('#edit-phone').value.trim() || null,
+        email: overlay.querySelector('#edit-email').value.trim() || null,
+        params: getFormState(),
+      });
+      overlay.remove();
+      renderClientTab();
+    } catch (err) {
+      alert(err.message);
+      saveBtn.disabled = false;
+      saveBtn.textContent = '保存';
+    }
+  });
+}
+
 // 他モジュールから参照用
 window.getFormState = getFormState;
 window.EV_MASTER = EV_MASTER;
@@ -363,4 +585,8 @@ document.addEventListener('DOMContentLoaded', () => {
   setupTabs();
   computeAndUpdateSummary();
   renderConfirmTab();
+
+  // 顧客登録ボタン
+  const regBtn = document.getElementById('btn-register-client');
+  if (regBtn) regBtn.addEventListener('click', handleRegisterClient);
 });
