@@ -90,7 +90,6 @@ function setupFormStateProxy() {
     const p = clientParams;
     const ev = (window.EV_MASTER && window.EV_MASTER[p.evModel]) || {
       efficiency: p.evEfficiency || 5.0,
-      maintenance: p.evMaintenance || 80000,
     };
     const dailyKm = p.dailyKm || 0;
     const workDays = p.workDays || 0;
@@ -99,7 +98,6 @@ function setupFormStateProxy() {
     return {
       evModel: p.evModel || '',
       evEfficiency: ev.efficiency || p.evEfficiency,
-      evMaintenance: ev.maintenance || p.evMaintenance,
       units: selectedUnits,
       dailyKm,
       workDays,
@@ -150,12 +148,13 @@ function recalculate() {
   const payback = C.paybackYears(s.equipPrice, energySaving);
 
   // 維持費（月間/年間）
+  // 入力値（車両維持費）を導入前・導入後の両方に適用する
   const dieselMaintTotal = s.dieselMaintenance * units;
-  const evMaintTotal = s.evMaintenance * units;
-  const maintDiff = C.monthlyMaintenanceDiff(s.dieselMaintenance, s.evMaintenance, units);
+  const evMaintTotal = s.dieselMaintenance * units;
+  const maintDiff = 0;
   const dieselMaintAnnual = dieselMaintTotal * 12;
   const evMaintAnnual = evMaintTotal * 12;
-  const maintDiffAnnual = maintDiff * 12;
+  const maintDiffAnnual = 0;
 
   const totalBefore = fuelCost + dieselMaintTotal;
   const totalAfter = totalChargeCost + evMaintTotal;

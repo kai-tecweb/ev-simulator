@@ -2,11 +2,11 @@
  * EV試算ツール - メイン制御・入力連携・タブ切替
  */
 
-// 車種マスタ
+// 車種マスタ（電費のみ参照。価格・補助金・維持費は本ツールでは使用しない）
 const EV_MASTER = {
-  'フォロフライ F11VS': { battery: 82, efficiency: 5.0, range: 350, price: 11908000, subsidy: 5808000, maintenance: 80000 },
-  'ZOモーターズ（仮）': { battery: 60, efficiency: 5.0, range: 280, price: 5500000, subsidy: 1700000, maintenance: 75000 },
-  '日野ディトロ（仮）': { battery: 100, efficiency: 5.5, range: 400, price: 7500000, subsidy: 2500000, maintenance: 90000 },
+  'フォロフライ F11VS': { battery: 82, efficiency: 5.0, range: 350 },
+  'ZOモーターズ（仮）': { battery: 60, efficiency: 5.0, range: 280 },
+  '日野ディトロ（仮）': { battery: 100, efficiency: 5.5, range: 400 },
 };
 
 // 確認事項マスタ（事前確認事項 1-6）
@@ -89,12 +89,11 @@ function getFormState() {
   const sellPrice = parseFloat(document.getElementById('sellPrice').value) || 0;
 
   const evModelKey = document.getElementById('evModel').value;
-  const ev = EV_MASTER[evModelKey] || { efficiency: 5.0, maintenance: 80000 };
+  const ev = EV_MASTER[evModelKey] || { efficiency: 5.0 };
 
   return {
     evModel: evModelKey,
     evEfficiency: ev.efficiency,
-    evMaintenance: ev.maintenance,
     units,
     dailyKm,
     workDays,
@@ -169,12 +168,13 @@ function updateResultTab() {
   const totalChargeCost = chargeCost + basicChargeCost;
 
   // 維持費（月間 / 年間）
+  // 入力値（車両維持費）を導入前・導入後の両方に適用する
   const dieselMaintTotal = s.dieselMaintenance * s.units;
-  const evMaintTotal = s.evMaintenance * s.units;
-  const maintDiff = C.monthlyMaintenanceDiff(s.dieselMaintenance, s.evMaintenance, s.units);
+  const evMaintTotal = s.dieselMaintenance * s.units;
+  const maintDiff = 0;
   const dieselMaintAnnual = dieselMaintTotal * 12;
   const evMaintAnnual = evMaintTotal * 12;
-  const maintDiffAnnual = maintDiff * 12;
+  const maintDiffAnnual = 0;
 
   const totalBefore = fuelCost + dieselMaintTotal;
   const totalAfter = totalChargeCost + evMaintTotal;
