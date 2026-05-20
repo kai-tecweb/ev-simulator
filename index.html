@@ -43,8 +43,12 @@
               <input type="number" id="units" name="units" min="1" max="99" value="3">
             </div>
             <div class="form-group">
-              <label for="annualKm">年間走行距離（km）</label>
-              <input type="number" id="annualKm" name="annualKm" min="1" value="48000">
+              <label for="dailyKm">1日走行距離（km/台）</label>
+              <input type="number" id="dailyKm" name="dailyKm" min="1" value="100">
+            </div>
+            <div class="form-group">
+              <label for="workDays">稼働日数（日/月）</label>
+              <input type="number" id="workDays" name="workDays" min="1" max="31" value="23">
             </div>
             <div class="form-group">
               <label for="fuelEfficiency">軽油燃費（km/L）</label>
@@ -55,16 +59,8 @@
               <input type="number" id="dieselPrice" name="dieselPrice" min="0" step="0.1" value="115.6">
             </div>
             <div class="form-group">
-              <label for="dieselPricePerUnit">現行車両価格（円/台）</label>
-              <input type="number" id="dieselPricePerUnit" name="dieselPricePerUnit" min="0" value="5000000">
-            </div>
-            <div class="form-group">
-              <label for="dieselMaintenance">現行車両維持費（円/台/月）</label>
+              <label for="dieselMaintenance">車両維持費（整備費等、円/台/月）</label>
               <input type="number" id="dieselMaintenance" name="dieselMaintenance" min="0" value="150000">
-            </div>
-            <div class="form-group">
-              <label for="vehicleDeprecYears">車両償却年数（年）</label>
-              <input type="number" id="vehicleDeprecYears" name="vehicleDeprecYears" min="1" value="7">
             </div>
           </div>
 
@@ -78,31 +74,28 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="equipPrice">1台あたり設備費・工事込み（円）</label>
-              <input type="number" id="equipPrice" name="equipPrice" min="0" value="700000">
-            </div>
-            <div class="form-group">
-              <label for="equipDeprecYears">設備償却年数（年）</label>
-              <input type="number" id="equipDeprecYears" name="equipDeprecYears" min="1" value="7">
+              <label for="equipPrice">充電設備費合計（補助金差引後、円）</label>
+              <input type="number" id="equipPrice" name="equipPrice" min="0" value="1500000">
+              <p class="form-note">※ 台数分の合計金額を入力（補助金がある場合は差し引いた金額）<br>例：設備費100万円 - 補助金40万円 = 60万円と入力</p>
             </div>
           </div>
 
           <div class="sub-tab-panel" id="subtab-power">
             <div class="form-group">
-              <label for="homeRate">充電単価（円/kWh）</label>
+              <label for="homeRate">EV充電 従量単価（円/kWh）</label>
               <input type="number" id="homeRate" name="homeRate" min="0" step="0.01" value="23.88">
             </div>
             <div class="form-group">
-              <label for="basicRate">基本料金単価（円/kWh）</label>
+              <label for="basicRate">基本料金単価（円/kW）</label>
               <input type="number" id="basicRate" name="basicRate" min="0" step="0.01" value="313.08">
             </div>
             <div class="form-group">
-              <label for="capacityRate">容量拠出金（円/kWh）</label>
+              <label for="capacityRate">容量拠出金単価（円/kW）</label>
               <input type="number" id="capacityRate" name="capacityRate" min="0" step="0.01" value="172">
             </div>
             <div class="form-group">
-              <label for="powerIncrease">EV1台あたり電力増量（kWh）</label>
-              <input type="number" id="powerIncrease" name="powerIncrease" min="0" step="0.1" value="6">
+              <label for="powerIncrease">契約電力増量（合計、kW）</label>
+              <input type="number" id="powerIncrease" name="powerIncrease" min="0" step="0.1" value="0">
             </div>
             <div class="form-group">
               <label for="chargeHours">充電時間（時間/日）</label>
@@ -186,22 +179,16 @@
               <td id="cost-fuel-diff">—</td>
             </tr>
             <tr>
-              <td>充電設備償却費</td>
-              <td>—</td>
-              <td id="cost-equip-after">—</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td>車両維持費</td>
+              <td>車両維持費（月間）</td>
               <td id="cost-maint-before">—</td>
               <td id="cost-maint-after">—</td>
               <td id="cost-maint-diff">—</td>
             </tr>
             <tr>
-              <td>車両償却費差額</td>
-              <td>—</td>
-              <td id="cost-vehicle-diff">—</td>
-              <td>—</td>
+              <td>車両維持費（年間）</td>
+              <td id="cost-maint-before-annual">—</td>
+              <td id="cost-maint-after-annual">—</td>
+              <td id="cost-maint-diff-annual">—</td>
             </tr>
             <tr class="total-row">
               <td>月間合計</td>

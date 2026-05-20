@@ -29,10 +29,8 @@ function drawChartUnits() {
     const fuelCost = C.monthlyFuelCost(fuelL, s.dieselPrice);
     const chargeKwh = C.monthlyChargeKwh(s.annualKm, s.evEfficiency, u);
     const chargeCost = C.monthlyChargeCost(chargeKwh, s.homeRate);
-    const basicCharge = C.monthlyBasicChargeCost(s.basicRate, s.capacityRate, s.powerIncrease, u);
-    const energySaving = C.monthlyEnergySaving(fuelCost, chargeCost, basicCharge);
-    const equipCost = -C.monthlyEquipCost(s.equipPrice, u, s.equipDeprecYears);
-    savings.push(C.monthlySaving(energySaving, equipCost));
+    const basicCharge = C.monthlyBasicChargeCost(s.basicRate, s.capacityRate, s.powerIncrease);
+    savings.push(C.monthlyEnergySaving(fuelCost, chargeCost, basicCharge));
   }
 
   chartUnits = new Chart(ctx, {
@@ -119,6 +117,7 @@ function drawChartShinidemi() {
       scales: {
         x: { title: { display: true, text: '販売単価（円/kWh）' } },
         y: {
+          title: { display: true, text: '収益予想（円/月）' },
           ticks: { callback: (v) => v.toLocaleString() },
         },
       },

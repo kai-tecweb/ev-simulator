@@ -20,9 +20,10 @@ const monthlyChargeKwh = (annualKm, evEfficiency, units) =>
 const monthlyChargeCost = (chargeKwh, chargeRate) => chargeKwh * chargeRate;
 
 // EV充電の電力基本料金増加額（月間）（円）
-// = (基本料金単価 + 容量拠出金) × 電力増量kWh × 台数
-const monthlyBasicChargeCost = (basicRate, capacityRate, powerIncrease, units) =>
-  (basicRate + capacityRate) * powerIncrease * units;
+// = (基本料金単価 + 容量拠出金) × 契約電力増量(kW)
+// ※ powerIncrease は契約全体の総kW（× 台数しない）
+const monthlyBasicChargeCost = (basicRate, capacityRate, powerIncrease) =>
+  (basicRate + capacityRate) * powerIncrease;
 
 // 月間エネルギーコスト削減額（円）
 // = 燃料費 - 充電金額 - 基本料金増加額
@@ -30,8 +31,9 @@ const monthlyEnergySaving = (fuelCost, chargeCost, basicChargeCost) =>
   fuelCost - chargeCost - basicChargeCost;
 
 // 充電設備 月間償却費（円）
-const monthlyEquipCost = (equipPrice, units, years) =>
-  (equipPrice * units) / (years * 12);
+// ※ equipPrice は合計設備費（補助金差引後）。台数倍しない
+const monthlyEquipCost = (equipPrice, years) =>
+  equipPrice / (years * 12);
 
 // 月間削減額（残）= エネルギーコスト削減 + 月間設備費（設備費は負値として加算）
 const monthlySaving = (energySaving, equipCost) =>
@@ -46,10 +48,12 @@ const monthlyBalance = (saving, evNet, leaseYears) =>
   saving + (evNet / (leaseYears * 12));
 
 // 投資回収期間（年）
-const paybackYears = (evPrice, dieselPrice, subsidy, equipPrice, units, saving) => {
-  const totalInvestment = (evPrice - dieselPrice - subsidy + equipPrice) * units;
-  if (saving <= 0 || totalInvestment <= 0) return null;
-  return totalInvestment / saving / 12;
+// 投資額 = 充電設備費（補助金差引後の合計額、手入力）
+// 年間差額 = 月間エネルギーコスト削減額 × 12
+const paybackYears = (equipPrice, monthlyEnergySaving) => {
+  const annualSaving = monthlyEnergySaving * 12;
+  if (annualSaving <= 0 || equipPrice <= 0) return null;
+  return equipPrice / annualSaving;
 };
 
 // CO2計算（軽油）t-CO2/年

@@ -87,12 +87,11 @@ function exportToExcel() {
   const headers = [
     '台数', '軽油消費量(L)', '軽油単価(円/L)', '燃料費(円)',
     '充電量(kWh)', '充電金額(円)', '基本料金増加額(円)',
-    'エネルギーコスト削減額(円)', '設備費月払い(円)', '月間削減額(円)',
-    'EV車両価格(円)', '補助金(円)', 'EV乗出し価格(円)', 'EV切替後月間収支(円)'
+    '月間エネルギー差額(円)', '年間エネルギー差額(円)'
   ];
 
   // 金額列インデックス（右寄せ・#,##0）
-  const moneyCols = new Set([1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+  const moneyCols = new Set([1, 3, 4, 5, 6, 7, 8]);
   // 数値中央揃え列
   const centerCols = new Set([0, 2]);
 
@@ -106,27 +105,24 @@ function exportToExcel() {
 
   // 合計用
   let totalFuelL = 0, totalFuelCost = 0, totalChargeKwh = 0;
-  let totalChargeCost = 0, totalBasicCharge = 0, totalEnergySaving = 0;
-  let totalEquipCost = 0, totalMonthlySaving = 0;
-  let totalEvPrice = 0, totalSubsidy = 0, totalEvNet = 0, totalBalance = 0;
+  let totalChargeCost = 0, totalEnergySaving = 0, totalAnnualSaving = 0;
+  // 基本料金は契約全体に対する単一値（× 台数しない）
+  const basicChargeFleet = C.monthlyBasicChargeCost(s.basicRate, s.capacityRate, s.powerIncrease);
 
   for (let u = 1; u <= s.units; u++) {
     const fuelL = C.monthlyFuelL(s.annualKm, s.fuelEfficiency, 1);
     const fuelCost = C.monthlyFuelCost(fuelL, s.dieselPrice);
     const chargeKwh = C.monthlyChargeKwh(s.annualKm, s.evEfficiency, 1);
     const chargeCost = C.monthlyChargeCost(chargeKwh, s.homeRate);
-    const basicCharge = C.monthlyBasicChargeCost(s.basicRate, s.capacityRate, s.powerIncrease, 1);
-    const energySaving = C.monthlyEnergySaving(fuelCost, chargeCost, basicCharge);
-    const equipCost = -C.monthlyEquipCost(s.equipPrice, 1, s.equipDeprecYears);
-    const monthlySav = C.monthlySaving(energySaving, equipCost);
-    const evNet = C.evNetPrice(s.evPrice, s.evSubsidy);
-    const balance = C.monthlyBalance(monthlySav, evNet, s.vehicleDeprecYears);
+    // 基本料金は1台目の行のみに計上
+    const basicCharge = (u === 1) ? basicChargeFleet : 0;
+    const energySaving = fuelCost - chargeCost - basicCharge;
+    const annualSaving = energySaving * 12;
 
     const row = [
       u, Math.round(fuelL), s.dieselPrice, Math.round(fuelCost),
       Math.round(chargeKwh), Math.round(chargeCost), Math.round(basicCharge),
-      Math.round(energySaving), Math.round(equipCost), Math.round(monthlySav),
-      s.evPrice, s.evSubsidy, evNet, Math.round(balance)
+      Math.round(energySaving), Math.round(annualSaving)
     ];
     allRows.push(row);
 
@@ -134,23 +130,23 @@ function exportToExcel() {
     totalFuelCost += fuelCost;
     totalChargeKwh += chargeKwh;
     totalChargeCost += chargeCost;
-    totalBasicCharge += basicCharge;
     totalEnergySaving += energySaving;
-    totalEquipCost += equipCost;
-    totalMonthlySaving += monthlySav;
-    totalEvPrice += s.evPrice;
-    totalSubsidy += s.evSubsidy;
-    totalEvNet += evNet;
-    totalBalance += balance;
+    totalAnnualSaving += annualSaving;
   }
 
   // 合計行
   allRows.push([
     '合計', Math.round(totalFuelL), '', Math.round(totalFuelCost),
-    Math.round(totalChargeKwh), Math.round(totalChargeCost), Math.round(totalBasicCharge),
-    Math.round(totalEnergySaving), Math.round(totalEquipCost), Math.round(totalMonthlySaving),
-    totalEvPrice, totalSubsidy, totalEvNet, Math.round(totalBalance)
+    Math.round(totalChargeKwh), Math.round(totalChargeCost), Math.round(basicChargeFleet),
+    Math.round(totalEnergySaving), Math.round(totalAnnualSaving)
   ]);
+  const totalRowIdx = allRows.length - 1;
+
+  // 投資回収年数（合計エネルギー差額から逆算）
+  const payback = C.paybackYears(s.equipPrice, totalEnergySaving);
+  allRows.push([]);
+  allRows.push(['充電設備費（補助金差引後・円）', '', '', '', '', '', '', s.equipPrice]);
+  allRows.push(['投資回収年数（年）', '', '', '', '', '', '', payback != null ? Number(payback.toFixed(2)) : '—']);
 
   const ws1 = XLSX.utils.aoa_to_sheet(allRows);
 
@@ -163,7 +159,7 @@ function exportToExcel() {
     if (i === 1) return { hpt: 18 };    // サブタイトル行
     if (i === 2) return { hpt: 12 };    // 空白行
     if (i === 3) return { hpt: 25 };    // ヘッダー行
-    if (i === allRows.length - 1) return { hpt: 22 }; // 合計行
+    if (i === totalRowIdx) return { hpt: 22 }; // 合計行
     return { hpt: 20 };                 // データ行
   });
 
@@ -176,7 +172,6 @@ function exportToExcel() {
   // スタイル適用
   const range1 = XLSX.utils.decode_range(ws1['!ref']);
   const headerRowIdx = 3;
-  const totalRowIdx = allRows.length - 1;
 
   for (let R = 0; R <= range1.e.r; R++) {
     for (let col = 0; col <= range1.e.c; col++) {
@@ -214,6 +209,16 @@ function exportToExcel() {
         } else if (centerCols.has(col)) {
           cell.s.alignment = { ...cell.s.alignment, horizontal: 'center' };
         }
+      } else if (R > totalRowIdx) {
+        // 合計行の下：充電設備費・投資回収年数
+        applyStyle(cell, STYLES.dataOdd);
+        if (col === 0) {
+          cell.s.font = { ...cell.s.font, bold: true };
+        }
+        if (typeof cell.v === 'number') {
+          cell.z = '#,##0';
+          cell.s.alignment = { ...cell.s.alignment, horizontal: 'right' };
+        }
       }
     }
   }
@@ -228,17 +233,16 @@ function exportToExcel() {
     ['項目', '値'],
     ['車種', s.evModel],
     ['台数', s.units + '台'],
-    ['年間走行距離', s.annualKm.toLocaleString() + ' km'],
+    ['1日走行距離', (s.dailyKm || 0) + ' km/台'],
+    ['稼働日数', (s.workDays || 0) + ' 日/月'],
     ['軽油燃費', s.fuelEfficiency + ' km/L'],
     ['軽油単価', s.dieselPrice + '円/L'],
     ['電費', s.evEfficiency + ' km/kWh'],
-    ['充電単価', s.homeRate + '円/kWh'],
-    ['基本料金単価', s.basicRate + '円/kWh'],
-    ['容量拠出金', s.capacityRate + '円/kWh'],
-    ['設備費（1台）', s.equipPrice.toLocaleString() + '円'],
-    ['償却年数', s.equipDeprecYears + '年'],
-    ['EV車両価格', s.evPrice.toLocaleString() + '円'],
-    ['補助金', s.evSubsidy.toLocaleString() + '円'],
+    ['EV充電 従量単価', s.homeRate + '円/kWh'],
+    ['基本料金単価', s.basicRate + '円/kW'],
+    ['容量拠出金単価', s.capacityRate + '円/kW'],
+    ['契約電力増量', (s.powerIncrease || 0) + ' kW'],
+    ['充電設備費合計（補助金差引後）', s.equipPrice.toLocaleString() + '円'],
   ];
   const ws2 = XLSX.utils.aoa_to_sheet(paramRows);
   ws2['!cols'] = [{ wch: 18 }, { wch: 28 }];

@@ -179,6 +179,17 @@ body {
   padding: 0;
 }
 
+.form-note {
+  margin: 0.35rem 0 0;
+  padding: 0.5rem 0.75rem;
+  background: #f8fafc;
+  border-left: 3px solid var(--color-main);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #475569;
+  max-width: 320px;
+}
+
 /* サマリーカード */
 .column-summary {
   position: sticky;
