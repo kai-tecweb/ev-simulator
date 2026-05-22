@@ -102,6 +102,7 @@ function setupFormStateProxy() {
       dailyKm,
       workDays,
       annualKm,
+      fuelType: p.fuelType || 'diesel',
       fuelEfficiency: p.fuelEfficiency || 10,
       dieselPrice: p.dieselPrice || 0,
       dieselMaintenance: p.dieselMaintenance || 0,
@@ -163,7 +164,7 @@ function recalculate() {
   // CO2
   const annualFuelL = (s.annualKm / s.fuelEfficiency) * units;
   const annualPowerKwh = chargeKwh * 12;
-  const co2D = C.co2Diesel(annualFuelL);
+  const co2D = C.co2Diesel(annualFuelL, s.fuelType);
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = Math.max(0, co2D - co2E);
   const pct = co2D > 0 ? ((co2Reduce / co2D) * 100).toFixed(0) : '0';
@@ -180,7 +181,12 @@ function recalculate() {
   // サマリーカード
   document.getElementById('cl-summary-saving').textContent =
     (saving != null && !Number.isNaN(saving)) ? Math.round(saving).toLocaleString() : '—';
-  document.getElementById('cl-summary-breakeven').textContent = breakEven.toFixed(1);
+  const annualSaving = energySaving * 12;
+  const annualEl = document.getElementById('cl-summary-annual-saving');
+  if (annualEl) {
+    annualEl.textContent = (annualSaving != null && !Number.isNaN(annualSaving))
+      ? Math.round(annualSaving).toLocaleString() : '—';
+  }
   document.getElementById('cl-summary-co2').textContent = co2Reduce >= 0 ? co2Reduce.toFixed(1) : '0.0';
   document.getElementById('cl-summary-payback').textContent =
     (payback != null && Number.isFinite(payback)) ? payback.toFixed(2) : '—';
@@ -229,6 +235,9 @@ function drawClientCharts(s) {
     const bC = C.monthlyBasicChargeCost(s.basicRate, s.capacityRate, s.powerIncrease);
     savings.push(C.monthlyEnergySaving(fC, cC, bC));
   }
+  // 現在の台数の棒だけを強調表示
+  const bgColors = labels.map((_, i) => (i + 1) === selectedUnits ? 'rgba(220,38,38,0.85)' : 'rgba(0,166,81,0.7)');
+  const borderColors = labels.map((_, i) => (i + 1) === selectedUnits ? '#dc2626' : '#00a651');
 
   chartUnitsClient = new Chart(ctx1, {
     type: 'bar',
@@ -237,8 +246,8 @@ function drawClientCharts(s) {
       datasets: [{
         label: '月間削減額（円）',
         data: savings,
-        backgroundColor: 'rgba(0, 166, 81, 0.7)',
-        borderColor: '#00a651',
+        backgroundColor: bgColors,
+        borderColor: borderColors,
         borderWidth: 1,
       }],
     },

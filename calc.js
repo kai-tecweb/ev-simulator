@@ -56,8 +56,12 @@ const paybackYears = (equipPrice, monthlyEnergySaving) => {
   return equipPrice / annualSaving;
 };
 
-// CO2計算（軽油）t-CO2/年
-const co2Diesel = (annualFuelL) => annualFuelL * 0.00258;
+// CO2排出係数（t-CO2/L）
+const CO2_FACTORS = { diesel: 0.00258, gasoline: 0.00232 };
+
+// CO2計算（燃料）t-CO2/年
+const co2Diesel = (annualFuelL, fuelType = 'diesel') =>
+  annualFuelL * (CO2_FACTORS[fuelType] || CO2_FACTORS.diesel);
 
 // CO2計算（電力）t-CO2/年
 const co2Electric = (annualKwh) => annualKwh * 0.000417;

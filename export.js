@@ -85,7 +85,7 @@ function exportToExcel() {
 
   // ===== シート1: 営業試算表 =====
   const headers = [
-    '台数', '軽油消費量(L)', '軽油単価(円/L)', '燃料費(円)',
+    '台数', '燃料消費量(L)', '燃料単価(円/L)', '燃料費(円)',
     '充電量(kWh)', '充電金額(円)', '基本料金増加額(円)',
     '月間エネルギー差額(円)', '年間エネルギー差額(円)'
   ];
@@ -235,8 +235,9 @@ function exportToExcel() {
     ['台数', s.units + '台'],
     ['1日走行距離', (s.dailyKm || 0) + ' km/台'],
     ['稼働日数', (s.workDays || 0) + ' 日/月'],
-    ['軽油燃費', s.fuelEfficiency + ' km/L'],
-    ['軽油単価', s.dieselPrice + '円/L'],
+    ['燃料種別', (s.fuelType === 'gasoline') ? 'ガソリン' : '軽油'],
+    ['燃料燃費', s.fuelEfficiency + ' km/L'],
+    ['燃料単価', s.dieselPrice + '円/L'],
     ['電費', s.evEfficiency + ' km/kWh'],
     ['EV充電 従量単価', s.homeRate + '円/kWh'],
     ['基本料金単価', s.basicRate + '円/kW'],
@@ -288,7 +289,7 @@ function exportToExcel() {
   const annualFuelL = (s.annualKm / s.fuelEfficiency) * s.units;
   const chargeKwhTotal = C.monthlyChargeKwh(s.annualKm, s.evEfficiency, s.units);
   const annualPowerKwh = chargeKwhTotal * 12;
-  const co2D = C.co2Diesel(annualFuelL);
+  const co2D = C.co2Diesel(annualFuelL, s.fuelType);
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = Math.max(0, co2D - co2E);
   const pct = co2D > 0 ? ((co2Reduce / co2D) * 100).toFixed(1) : '0';
@@ -299,7 +300,7 @@ function exportToExcel() {
     ['出力日：' + dateStr],
     [],
     ['項目', '値'],
-    ['軽油CO2排出量', co2D.toFixed(2) + ' t-CO2/年'],
+    [((s.fuelType === 'gasoline') ? 'ガソリン' : '軽油') + 'CO2排出量', co2D.toFixed(2) + ' t-CO2/年'],
     ['EV CO2排出量', co2E.toFixed(2) + ' t-CO2/年'],
     ['削減量', co2Reduce.toFixed(2) + ' t-CO2/年'],
     ['削減率', pct + '%'],

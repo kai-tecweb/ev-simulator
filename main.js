@@ -7,6 +7,8 @@ const EV_MASTER = {
   'フォロフライ F11VS': { battery: 82, efficiency: 5.0, range: 350 },
   'ZOモーターズ（仮）': { battery: 60, efficiency: 5.0, range: 280 },
   '日野ディトロ（仮）': { battery: 100, efficiency: 5.5, range: 400 },
+  '日産リーフ': { battery: 40, efficiency: 7.0, range: 322 },
+  '日産サクラ': { battery: 20, efficiency: 9.0, range: 180 },
 };
 
 // 確認事項マスタ（事前確認事項 1-6）
@@ -63,7 +65,7 @@ ZOOM_CONFIRM_SECTIONS.forEach((sec) => sec.items.forEach((item) => { confirmStat
 
 // フォーム要素のID一覧
 const FORM_IDS = [
-  'evModel', 'units', 'dailyKm', 'workDays', 'fuelEfficiency', 'dieselPrice',
+  'evModel', 'units', 'dailyKm', 'workDays', 'fuelType', 'fuelEfficiency', 'dieselPrice',
   'dieselMaintenance', 'chargerOutput', 'equipPrice',
   'homeRate', 'basicRate', 'capacityRate', 'powerIncrease', 'chargeHours',
   'routeRate', 'routePct', 'chargeTimeSlot', 'buyPrice', 'sellPrice'
@@ -74,6 +76,7 @@ function getFormState() {
   const dailyKm = parseFloat(document.getElementById('dailyKm').value) || 0;
   const workDays = parseFloat(document.getElementById('workDays').value) || 0;
   const annualKm = dailyKm * workDays * 12;  // 1台あたり年間走行距離
+  const fuelType = (document.getElementById('fuelType') || { value: 'diesel' }).value;
   const fuelEfficiency = parseFloat(document.getElementById('fuelEfficiency').value) || 10;
   const dieselPrice = parseFloat(document.getElementById('dieselPrice').value) || 0;
   const dieselMaintenance = parseInt(document.getElementById('dieselMaintenance').value, 10) || 0;
@@ -98,6 +101,7 @@ function getFormState() {
     dailyKm,
     workDays,
     annualKm,
+    fuelType,
     fuelEfficiency,
     dieselPrice,
     dieselMaintenance,
@@ -131,25 +135,44 @@ function computeAndUpdateSummary() {
   // 月間エネルギーコスト差額（= 月間削減額）
   const energySaving = C.monthlyEnergySaving(fuelCost, chargeCost, basicChargeCost);
 
-  // 損益分岐（旧互換）
+  // 損益分岐（新出光側タブで表示）
   const breakEven = C.breakEvenPrice(s.buyPrice, 0, chargeKwh);
 
   // 投資回収期間 = 充電設備費（補助金差引後） ÷ 年間差額
   const payback = C.paybackYears(s.equipPrice, energySaving);
 
+  // 年間削減額
+  const annualSaving = energySaving * 12;
+
   // CO2
   const annualFuelL = (s.annualKm / s.fuelEfficiency) * s.units;
   const annualPowerKwh = chargeKwh * 12;
-  const co2D = C.co2Diesel(annualFuelL);
+  const co2D = C.co2Diesel(annualFuelL, s.fuelType);
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = co2D - co2E;
 
   document.getElementById('summary-saving').textContent = (energySaving != null && !Number.isNaN(energySaving))
     ? Math.round(energySaving).toLocaleString()
     : '—';
-  document.getElementById('summary-breakeven').textContent = breakEven.toFixed(1);
+  const annualSavingEl = document.getElementById('summary-annual-saving');
+  if (annualSavingEl) {
+    annualSavingEl.textContent = (annualSaving != null && !Number.isNaN(annualSaving))
+      ? Math.round(annualSaving).toLocaleString()
+      : '—';
+  }
   document.getElementById('summary-co2').textContent = co2Reduce >= 0 ? co2Reduce.toFixed(1) : '0.0';
   document.getElementById('summary-payback').textContent = (payback != null && Number.isFinite(payback)) ? payback.toFixed(2) : '—';
+
+  // 台数バッジ
+  const unitCountEl = document.getElementById('result-unit-count');
+  if (unitCountEl) unitCountEl.textContent = s.units;
+
+  // 新出光側タブ：損益分岐単価
+  const shinidemiBreakEl = document.getElementById('shinidemi-breakeven');
+  if (shinidemiBreakEl) shinidemiBreakEl.textContent = breakEven.toFixed(1);
+
+  // アクティブなタブ・サブタブのグラフを更新
+  if (window.redrawCharts) window.redrawCharts();
 }
 
 function updateResultTab() {
@@ -203,7 +226,7 @@ function updateResultTab() {
   // CO2パネル
   const annualFuelL = (s.annualKm / s.fuelEfficiency) * s.units;
   const annualPowerKwh = chargeKwh * 12;
-  const co2D = C.co2Diesel(annualFuelL);
+  const co2D = C.co2Diesel(annualFuelL, s.fuelType);
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = Math.max(0, co2D - co2E);
   const pct = co2D > 0 ? ((co2Reduce / co2D) * 100).toFixed(0) : '0';
@@ -212,6 +235,8 @@ function updateResultTab() {
 
   document.getElementById('co2-diesel').textContent = co2D.toFixed(2);
   document.getElementById('co2-elec').textContent = co2E.toFixed(2);
+  const fuelLabelEl = document.getElementById('co2-fuel-label');
+  if (fuelLabelEl) fuelLabelEl.textContent = (s.fuelType === 'gasoline') ? 'ガソリン' : '軽油';
   document.getElementById('co2-reduce').textContent = co2Reduce.toFixed(2) + ' t-CO2/年';
   document.getElementById('co2-pct').textContent = pct;
   document.getElementById('co2-trees').textContent = trees;
@@ -328,6 +353,8 @@ function setupSubTabs() {
       btn.classList.add('active');
       const panel = document.getElementById('subtab-' + target);
       if (panel) panel.classList.add('active');
+      // 新出光側タブを開いたら損益分岐グラフを描画
+      if (target === 'shinidemi' && window.redrawCharts) window.redrawCharts();
     });
   });
 }

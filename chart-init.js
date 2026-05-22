@@ -4,11 +4,18 @@
 
 let chartUnits = null;
 let chartShinidemi = null;
+let chartShinidemiSub = null;
 let chartMonthly = null;
+
+const BAR_COLOR = 'rgba(0, 166, 81, 0.7)';
+const BAR_COLOR_ACTIVE = 'rgba(220, 38, 38, 0.85)';
+const BAR_BORDER = '#00a651';
+const BAR_BORDER_ACTIVE = '#dc2626';
 
 function destroyCharts() {
   if (chartUnits) { chartUnits.destroy(); chartUnits = null; }
   if (chartShinidemi) { chartShinidemi.destroy(); chartShinidemi = null; }
+  if (chartShinidemiSub) { chartShinidemiSub.destroy(); chartShinidemiSub = null; }
   if (chartMonthly) { chartMonthly.destroy(); chartMonthly = null; }
 }
 
@@ -32,6 +39,9 @@ function drawChartUnits() {
     const basicCharge = C.monthlyBasicChargeCost(s.basicRate, s.capacityRate, s.powerIncrease);
     savings.push(C.monthlyEnergySaving(fuelCost, chargeCost, basicCharge));
   }
+  // 現在の台数（s.units）の棒だけを強調表示
+  const bgColors = labels.map((_, i) => (i + 1) === s.units ? BAR_COLOR_ACTIVE : BAR_COLOR);
+  const borderColors = labels.map((_, i) => (i + 1) === s.units ? BAR_BORDER_ACTIVE : BAR_BORDER);
 
   chartUnits = new Chart(ctx, {
     type: 'bar',
@@ -40,8 +50,8 @@ function drawChartUnits() {
       datasets: [{
         label: '月間削減額（円）',
         data: savings,
-        backgroundColor: 'rgba(0, 166, 81, 0.7)',
-        borderColor: '#00a651',
+        backgroundColor: bgColors,
+        borderColor: borderColors,
         borderWidth: 1,
       }],
     },
@@ -78,14 +88,13 @@ function drawChartUnits() {
   });
 }
 
-function drawChartShinidemi() {
-  const ctx = document.getElementById('chart-shinidemi');
-  if (!ctx) return;
-  if (chartShinidemi) chartShinidemi.destroy();
+function buildShinidemiChart(canvasId) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return null;
 
   const s = window.getFormState();
   const C = window.EVCalc;
-  if (!s || !C) return;
+  if (!s || !C) return null;
 
   const monthlyPowerKwh = C.monthlyPower(s.annualKm, s.evEfficiency, s.units);
   const prices = [];
@@ -96,9 +105,8 @@ function drawChartShinidemi() {
   }
 
   const currentPrice = s.sellPrice;
-  const currentProfit = C.shinidemiProfit(monthlyPowerKwh, currentPrice, s.buyPrice);
 
-  chartShinidemi = new Chart(ctx, {
+  return new Chart(ctx, {
     type: 'line',
     data: {
       labels: prices.map((v) => v + '円'),
@@ -139,19 +147,29 @@ function drawChartShinidemi() {
       afterDraw: (chart) => {
         const yScale = chart.scales.y;
         const zeroY = yScale.getPixelForValue(0);
-        const ctx = chart.ctx;
-        ctx.save();
-        ctx.strokeStyle = 'red';
-        ctx.setLineDash([5, 5]);
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(chart.chartArea.left, zeroY);
-        ctx.lineTo(chart.chartArea.right, zeroY);
-        ctx.stroke();
-        ctx.restore();
+        const c = chart.ctx;
+        c.save();
+        c.strokeStyle = 'red';
+        c.setLineDash([5, 5]);
+        c.lineWidth = 2;
+        c.beginPath();
+        c.moveTo(chart.chartArea.left, zeroY);
+        c.lineTo(chart.chartArea.right, zeroY);
+        c.stroke();
+        c.restore();
       },
     }],
   });
+}
+
+function drawChartShinidemi() {
+  if (chartShinidemi) chartShinidemi.destroy();
+  chartShinidemi = buildShinidemiChart('chart-shinidemi');
+}
+
+function drawChartShinidemiSub() {
+  if (chartShinidemiSub) chartShinidemiSub.destroy();
+  chartShinidemiSub = buildShinidemiChart('chart-shinidemi-sub');
 }
 
 function drawChartMonthly() {
@@ -189,10 +207,16 @@ function drawChartMonthly() {
 
 function redrawCharts() {
   const panel = document.getElementById('tab-result');
-  if (!panel || !panel.classList.contains('active')) return;
-  drawChartUnits();
-  drawChartShinidemi();
-  drawChartMonthly();
+  if (panel && panel.classList.contains('active')) {
+    drawChartUnits();
+    drawChartShinidemi();
+    drawChartMonthly();
+  }
+  // 新出光側サブタブが開いている場合のみ描画
+  const subPanel = document.getElementById('subtab-shinidemi');
+  if (subPanel && subPanel.classList.contains('active')) {
+    drawChartShinidemiSub();
+  }
 }
 
 window.redrawCharts = redrawCharts;
