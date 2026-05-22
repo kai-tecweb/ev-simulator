@@ -177,20 +177,31 @@ function drawChartMonthly() {
   if (!ctx) return;
   if (chartMonthly) chartMonthly.destroy();
 
-  if (typeof DUMMY_MONTHLY_POWER === 'undefined') return;
   const s = window.getFormState();
   if (!s) return;
 
-  const nightCosts = DUMMY_MONTHLY_POWER.night.map((kwh) => kwh * s.homeRate);
-  const dayCosts = DUMMY_MONTHLY_POWER.day.map((kwh) => kwh * s.homeRate);
+  // 月間消費電力(kWh) = 1日走行距離 × 稼働日数 × 台数 ÷ 電費
+  const evEff = s.evEfficiency || 5.0;
+  const monthlyKwh = (s.dailyKm * s.workDays * s.units) / evEff;
+  // 経路充電割合（0-100 → 0-1）
+  const routeRatio = (s.routePct || 0) / 100;
+  // 深夜充電コスト = 月間消費電力 × (1 - 経路充電割合) × EV充電従量単価
+  const nightCost = monthlyKwh * (1 - routeRatio) * s.homeRate;
+  // 昼間充電コスト = 月間消費電力 × 経路充電割合 × 経路充電単価
+  const dayCost = monthlyKwh * routeRatio * s.routeRate;
+
+  const labels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  // 季節変動なし：全月同値
+  const nightCosts = labels.map(() => nightCost);
+  const dayCosts = labels.map(() => dayCost);
 
   chartMonthly = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: DUMMY_MONTHLY_POWER.labels,
+      labels,
       datasets: [
-        { label: '深夜充電', data: nightCosts, borderColor: '#003087', tension: 0.2 },
-        { label: '昼間充電', data: dayCosts, borderColor: '#00a651', tension: 0.2 },
+        { label: '深夜充電（円/月）', data: nightCosts, borderColor: '#003087', backgroundColor: 'rgba(0,48,135,0.1)', tension: 0.2 },
+        { label: '昼間（経路）充電（円/月）', data: dayCosts, borderColor: '#00a651', backgroundColor: 'rgba(0,166,81,0.1)', tension: 0.2 },
       ],
     },
     options: {
@@ -198,6 +209,8 @@ function drawChartMonthly() {
       maintainAspectRatio: true,
       scales: {
         y: {
+          beginAtZero: true,
+          title: { display: true, text: '充電コスト（円/月）' },
           ticks: { callback: (v) => v.toLocaleString() },
         },
       },
