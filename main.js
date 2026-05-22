@@ -360,23 +360,29 @@ function setupSubTabs() {
 }
 
 function setupFormListeners() {
+  // 入力変更時はサマリー＋ダッシュボード（コスト比較表・CO2）を両方更新
+  const onInputChange = () => {
+    computeAndUpdateSummary();
+    updateResultTab();
+  };
+
   const routePct = document.getElementById('routePct');
   const routePctValue = document.getElementById('routePctValue');
   routePct.addEventListener('input', () => {
     routePctValue.textContent = routePct.value;
-    computeAndUpdateSummary();
+    onInputChange();
   });
 
   document.getElementById('evModel').addEventListener('change', () => {
     applyEvMaster();
-    computeAndUpdateSummary();
+    onInputChange();
   });
 
   FORM_IDS.forEach((id) => {
     const el = document.getElementById(id);
     if (!el || id === 'evModel' || id === 'routePct') return;
-    el.addEventListener('input', computeAndUpdateSummary);
-    el.addEventListener('change', computeAndUpdateSummary);
+    el.addEventListener('input', onInputChange);
+    el.addEventListener('change', onInputChange);
   });
 }
 
@@ -612,6 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFormListeners();
   setupTabs();
   computeAndUpdateSummary();
+  updateResultTab();
   renderConfirmTab();
 
   // 顧客登録ボタン
