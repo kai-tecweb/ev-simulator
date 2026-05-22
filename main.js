@@ -163,19 +163,21 @@ function computeAndUpdateSummary() {
   document.getElementById('summary-co2').textContent = co2Reduce >= 0 ? co2Reduce.toFixed(1) : '0.0';
   document.getElementById('summary-payback').textContent = (payback != null && Number.isFinite(payback)) ? payback.toFixed(2) : '—';
 
-  // ダッシュボード右半分：4枚サマリーカード（月間削減額・損益分岐単価・CO2削減量・投資回収期間）
+  // ダッシュボード右半分：4枚サマリーカード（月間削減額・年間削減額・CO2削減量・投資回収期間）
   const savingTxt = (energySaving != null && !Number.isNaN(energySaving))
     ? Math.round(energySaving).toLocaleString() : '—';
+  const annualSavingTxt = (annualSaving != null && !Number.isNaN(annualSaving))
+    ? Math.round(annualSaving).toLocaleString() : '—';
   const co2Txt = co2Reduce >= 0 ? co2Reduce.toFixed(1) : '0.0';
   const paybackTxt = (payback != null && Number.isFinite(payback)) ? payback.toFixed(2) : '—';
   const dashEls = {
     saving: document.getElementById('dash-summary-saving'),
-    breakeven: document.getElementById('dash-summary-breakeven'),
+    annualSaving: document.getElementById('dash-summary-annual-saving'),
     co2: document.getElementById('dash-summary-co2'),
     payback: document.getElementById('dash-summary-payback'),
   };
   if (dashEls.saving) dashEls.saving.textContent = savingTxt;
-  if (dashEls.breakeven) dashEls.breakeven.textContent = breakEven.toFixed(1);
+  if (dashEls.annualSaving) dashEls.annualSaving.textContent = annualSavingTxt;
   if (dashEls.co2) dashEls.co2.textContent = co2Txt;
   if (dashEls.payback) dashEls.payback.textContent = paybackTxt;
 
