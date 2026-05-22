@@ -222,10 +222,9 @@ function redrawCharts() {
   const panel = document.getElementById('tab-result');
   if (panel && panel.classList.contains('active')) {
     drawChartUnits();
-    drawChartShinidemi();
     drawChartMonthly();
   }
-  // 新出光側サブタブが開いている場合のみ描画
+  // 新出光側サブタブが開いている場合のみ損益分岐グラフを描画
   const subPanel = document.getElementById('subtab-shinidemi');
   if (subPanel && subPanel.classList.contains('active')) {
     drawChartShinidemiSub();

@@ -223,6 +223,16 @@ function updateResultTab() {
   document.getElementById('cost-total-after').textContent = fmt(totalAfter);
   document.getElementById('cost-total-diff').textContent = fmtDiff(totalDiff);
 
+  // ダッシュボード右下：年間削減額カード
+  const energySaving = fuelCost - totalChargeCost;
+  const annualSaving = energySaving * 12;
+  const dashAnnualEl = document.getElementById('dashboard-annual-saving');
+  if (dashAnnualEl) {
+    dashAnnualEl.textContent = (annualSaving != null && !Number.isNaN(annualSaving))
+      ? Math.round(annualSaving).toLocaleString()
+      : '—';
+  }
+
   // CO2パネル
   const annualFuelL = (s.annualKm / s.fuelEfficiency) * s.units;
   const annualPowerKwh = chargeKwh * 12;

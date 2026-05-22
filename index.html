@@ -38,7 +38,7 @@
               <label for="evModel">EV車種</label>
               <select id="evModel" name="evModel"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group important-input">
               <label for="units">台数</label>
               <input type="number" id="units" name="units" min="1" max="99" value="3">
             </div>
@@ -61,7 +61,7 @@
               <label for="fuelEfficiency">燃料燃費（km/L）</label>
               <input type="number" id="fuelEfficiency" name="fuelEfficiency" min="0.1" step="0.1" value="10">
             </div>
-            <div class="form-group important-input">
+            <div class="form-group">
               <label for="dieselPrice">燃料単価（円/L）</label>
               <input type="number" id="dieselPrice" name="dieselPrice" min="0" step="0.1" value="115.6">
             </div>
@@ -88,7 +88,7 @@
           </div>
 
           <div class="sub-tab-panel" id="subtab-power">
-            <div class="form-group important-input">
+            <div class="form-group">
               <label for="homeRate">EV充電 従量単価（円/kWh）</label>
               <input type="number" id="homeRate" name="homeRate" min="0" step="0.01" value="23.88">
             </div>
@@ -100,7 +100,7 @@
               <label for="capacityRate">容量拠出金単価（円/kW）</label>
               <input type="number" id="capacityRate" name="capacityRate" min="0" step="0.01" value="172">
             </div>
-            <div class="form-group">
+            <div class="form-group important-input">
               <label for="powerIncrease">契約電力増量（合計、kW）</label>
               <input type="number" id="powerIncrease" name="powerIncrease" min="0" step="0.1" value="0">
             </div>
@@ -223,9 +223,13 @@
           <h3>台数別月間削減額</h3>
           <canvas id="chart-units"></canvas>
         </div>
-        <div class="chart-box">
-          <h3>新出光側 損益分岐点</h3>
-          <canvas id="chart-shinidemi"></canvas>
+        <div class="chart-box dashboard-saving-card">
+          <h3>年間削減額</h3>
+          <div class="dashboard-saving-body">
+            <span id="dashboard-annual-saving" class="dashboard-saving-value">—</span>
+            <span class="dashboard-saving-unit">円/年</span>
+          </div>
+          <p class="dashboard-saving-note">月間エネルギー差額 × 12</p>
         </div>
       </div>
       <div class="chart-row">

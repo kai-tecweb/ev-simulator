@@ -231,6 +231,51 @@ body {
   margin: 0 0.15rem;
 }
 
+/* ダッシュボード右下：年間削減額カード（損益分岐グラフ置換） */
+.chart-box.dashboard-saving-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(135deg, #00a651 0%, #047857 100%);
+  color: #fff;
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 4px 12px rgba(0, 166, 81, 0.25);
+}
+.chart-box.dashboard-saving-card h3 {
+  color: #fff;
+  font-size: 1.05rem;
+  margin: 0 0 0.6rem 0;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.dashboard-saving-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0.4rem;
+}
+.dashboard-saving-value {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.dashboard-saving-unit {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #d1fae5;
+}
+.dashboard-saving-note {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0.5rem 0 0;
+}
+
 /* タスク5: 新出光側サブタブの損益分岐単価表示 */
 .shinidemi-summary {
   display: flex;
