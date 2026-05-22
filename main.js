@@ -163,6 +163,22 @@ function computeAndUpdateSummary() {
   document.getElementById('summary-co2').textContent = co2Reduce >= 0 ? co2Reduce.toFixed(1) : '0.0';
   document.getElementById('summary-payback').textContent = (payback != null && Number.isFinite(payback)) ? payback.toFixed(2) : '—';
 
+  // ダッシュボード右半分：4枚サマリーカード（月間削減額・損益分岐単価・CO2削減量・投資回収期間）
+  const savingTxt = (energySaving != null && !Number.isNaN(energySaving))
+    ? Math.round(energySaving).toLocaleString() : '—';
+  const co2Txt = co2Reduce >= 0 ? co2Reduce.toFixed(1) : '0.0';
+  const paybackTxt = (payback != null && Number.isFinite(payback)) ? payback.toFixed(2) : '—';
+  const dashEls = {
+    saving: document.getElementById('dash-summary-saving'),
+    breakeven: document.getElementById('dash-summary-breakeven'),
+    co2: document.getElementById('dash-summary-co2'),
+    payback: document.getElementById('dash-summary-payback'),
+  };
+  if (dashEls.saving) dashEls.saving.textContent = savingTxt;
+  if (dashEls.breakeven) dashEls.breakeven.textContent = breakEven.toFixed(1);
+  if (dashEls.co2) dashEls.co2.textContent = co2Txt;
+  if (dashEls.payback) dashEls.payback.textContent = paybackTxt;
+
   // 台数バッジ
   const unitCountEl = document.getElementById('result-unit-count');
   if (unitCountEl) unitCountEl.textContent = s.units;
@@ -222,16 +238,6 @@ function updateResultTab() {
   document.getElementById('cost-total-before').textContent = fmt(totalBefore);
   document.getElementById('cost-total-after').textContent = fmt(totalAfter);
   document.getElementById('cost-total-diff').textContent = fmtDiff(totalDiff);
-
-  // ダッシュボード右下：年間削減額カード
-  const energySaving = fuelCost - totalChargeCost;
-  const annualSaving = energySaving * 12;
-  const dashAnnualEl = document.getElementById('dashboard-annual-saving');
-  if (dashAnnualEl) {
-    dashAnnualEl.textContent = (annualSaving != null && !Number.isNaN(annualSaving))
-      ? Math.round(annualSaving).toLocaleString()
-      : '—';
-  }
 
   // CO2パネル
   const annualFuelL = (s.annualKm / s.fuelEfficiency) * s.units;

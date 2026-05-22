@@ -223,13 +223,27 @@
           <h3>台数別月間削減額</h3>
           <canvas id="chart-units"></canvas>
         </div>
-        <div class="chart-box dashboard-saving-card">
-          <h3>年間削減額</h3>
-          <div class="dashboard-saving-body">
-            <span id="dashboard-annual-saving" class="dashboard-saving-value">—</span>
-            <span class="dashboard-saving-unit">円/年</span>
+        <div class="dashboard-summary-cards">
+          <div class="summary-card">
+            <span class="summary-label">月間削減額</span>
+            <span id="dash-summary-saving" class="summary-value">—</span>
+            <span class="summary-unit">円/月</span>
           </div>
-          <p class="dashboard-saving-note">月間エネルギー差額 × 12</p>
+          <div class="summary-card">
+            <span class="summary-label">損益分岐単価</span>
+            <span id="dash-summary-breakeven" class="summary-value">—</span>
+            <span class="summary-unit">円/kWh</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-label">CO2削減量</span>
+            <span id="dash-summary-co2" class="summary-value">—</span>
+            <span class="summary-unit">t-CO2/年</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-label">投資回収期間</span>
+            <span id="dash-summary-payback" class="summary-value">—</span>
+            <span class="summary-unit">年</span>
+          </div>
         </div>
       </div>
       <div class="chart-row">
