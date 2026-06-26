@@ -8,3 +8,4 @@ fs.writeFileSync(
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || ''
   }) + ';'
 );
+console.log('env-config.js生成内容:', fs.readFileSync('env-config.js', 'utf8'));
