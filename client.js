@@ -3,6 +3,7 @@
  * URLパラメータ ?id=UUID でSupabaseから顧客データを取得し、
  * 台数選択のみで試算結果をリアルタイム表示する。
  */
+const CO2_CEDAR_ABSORPTION = 0.0084;
 
 let clientParams = null;  // Supabaseから取得したパラメータ
 let selectedUnits = 1;    // 選択中の台数
@@ -168,7 +169,7 @@ function recalculate() {
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = Math.max(0, co2D - co2E);
   const pct = co2D > 0 ? ((co2Reduce / co2D) * 100).toFixed(0) : '0';
-  const trees = Math.round(co2Reduce / 0.0084);
+  const trees = Math.round(co2Reduce / CO2_CEDAR_ABSORPTION);
 
   // フォーマッター
   const fmt = (n) => (n != null && !Number.isNaN(n) ? '¥' + Math.round(n).toLocaleString() : '—');

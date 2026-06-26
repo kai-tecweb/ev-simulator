@@ -2,6 +2,7 @@
  * Excel出力（xlsx-js-style）
  * シート1: 営業試算表、シート2: 入力パラメータ、シート3: CO2削減効果
  */
+const CO2_CEDAR_ABSORPTION = 0.0084;
 
 // 共通スタイル定義
 const STYLES = {
@@ -293,7 +294,7 @@ function exportToExcel() {
   const co2E = C.co2Electric(annualPowerKwh);
   const co2Reduce = Math.max(0, co2D - co2E);
   const pct = co2D > 0 ? ((co2Reduce / co2D) * 100).toFixed(1) : '0';
-  const trees = Math.round(co2Reduce / 0.0084);
+  const trees = Math.round(co2Reduce / CO2_CEDAR_ABSORPTION);
 
   const co2Rows = [
     ['EV導入効果試算書 - CO2削減効果'],

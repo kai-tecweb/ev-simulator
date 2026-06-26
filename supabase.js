@@ -2,13 +2,13 @@
  * Supabase接続・顧客CRUD処理
  */
 
-const SUPABASE_URL = 'https://clzxejqhnsermtbuyizs.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_H01W0MiX-7lxHY9tn9DZ8Q_uDJnQTNa';
+const SUPABASE_URL = window.__ENV__?.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = window.__ENV__?.SUPABASE_ANON_KEY || '';
 
 const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // 顧客専用ページのベースURL
-const CLIENT_PAGE_BASE = 'https://ev-simulator-beige.vercel.app/client.html';
+const CLIENT_PAGE_BASE = window.location.origin + '/client.html';
 
 /**
  * 顧客一覧取得（作成日降順）
