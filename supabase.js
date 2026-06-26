@@ -2,10 +2,13 @@
  * Supabase接続・顧客CRUD処理
  */
 
-const SUPABASE_URL = window.__ENV__?.SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = window.__ENV__?.SUPABASE_ANON_KEY || '';
+let _supabase;
 
-const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+document.addEventListener('DOMContentLoaded', function () {
+  const SUPABASE_URL = window.__ENV__?.SUPABASE_URL || '';
+  const SUPABASE_ANON_KEY = window.__ENV__?.SUPABASE_ANON_KEY || '';
+  _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+});
 
 // 顧客専用ページのベースURL
 const CLIENT_PAGE_BASE = window.location.origin + '/client.html';
